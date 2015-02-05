@@ -26,5 +26,16 @@
   "bugs": {
     "url": "https://github.com/zach3904/ping-pong-queue/issues"
   },
-  "homepage": "https://github.com/zach3904/ping-pong-queue"
+  "homepage": "https://github.com/zach3904/ping-pong-queue",
+  "jspm": {
+    "directories": {
+      "baseURL": "www"
+    },
+    "dependencies": {
+      "express": "^4.11.2",
+      "express-handlebars": "^1.1.0",
+      "handlebars": "^2.0.0",
+      "react": "^0.12.2"
+    }
+  }
 }
