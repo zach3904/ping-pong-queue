@@ -1,18 +1,34 @@
 @import url('bootswatch.css');
 
 body {
-	background-color: #f5f5f5;
+	background-color: rgb(250, 250, 250);
 }
-
 img {
 	max-width: 100%;
 }
+
+
 .pongQueue-container {
 	margin-top: 30px;
 }
-.pongQueue-logo {
+.header,
+.section {
+	margin-bottom: 40px;
+}
+.logo {
 	width: 160px;
 }
-.pongQueue-sectionInner {
-	background-color: #fff;
+.sectionInner {
+	background-color: rgb(255, 255, 255);
+	border-radius: 1px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+	padding: 15px;
+}
+.sectionInner.sectionInner--current-game {
+	background-color: rgb(33, 150, 243);
+	color: rgb(255, 255, 255);
+}
+.sectionInner.sectionInner--current-game h4,
+.sectionInner.sectionInner--current-game h5 {
+	color: rgb(255, 255, 255);
 }
