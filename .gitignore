@@ -1,1 +1,9 @@
+node_modules/.bin/
+
+# Development Tools
+node_modules/nodemon/
+node_modules/jspm/
+
+# Intellij Project
 *.iml
+
