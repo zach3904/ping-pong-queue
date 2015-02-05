@@ -6,18 +6,36 @@ body {
 img {
 	max-width: 100%;
 }
-
+h1, h2, h3, h4, h5, h6 {
+	margin-top: 10px;
+	margin-bottom: 15px;
+}
+hr {
+	border-top: 1px solid rgba(0, 0, 0, 0.35);
+	border-bottom: 1px solid #eeeeee;
+	opacity: 0.2;
+}
 
 .pongQueue-container {
 	margin-top: 30px;
 }
-.header,
+.header {
+	margin-bottom: 30px;
+}
 .section {
 	margin-bottom: 40px;
 }
 .logo {
-	width: 160px;
+	width: 100px;
 }
+.header h6 {
+	color: rgb(136, 136, 136);
+	font-size: 18px;
+	font-weight: 300;
+	margin: 8px 0 0 25px;
+	padding: 0;
+}
+
 .sectionInner {
 	background-color: rgb(255, 255, 255);
 	border-radius: 1px;
@@ -31,4 +49,8 @@ img {
 .sectionInner.sectionInner--current-game h4,
 .sectionInner.sectionInner--current-game h5 {
 	color: rgb(255, 255, 255);
+}
+
+.currentGame-players span {
+	display: inline-block;
 }
