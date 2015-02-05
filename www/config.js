@@ -2,7 +2,7 @@ System.config({
   "baseURL": "/",
   "paths": {
     "*": "*.js",
-    "ping-pong-queue/*": "lib/*.js",
+    "ping-pong-queue/*": "app/*.js",
     "npm:*": "jspm_packages/npm/*.js",
     "github:*": "jspm_packages/github/*.js"
   }
