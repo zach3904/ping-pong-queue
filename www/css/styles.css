@@ -41,6 +41,7 @@ hr {
 	border-radius: 1px;
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 	padding: 15px;
+	position: relative;
 }
 .sectionInner.sectionInner--current-game {
 	background-color: rgb(33, 150, 243);
@@ -55,11 +56,10 @@ hr {
 	display: inline-block;
 }
 .currentGame-logForm {
-	display: none;
 	margin-top: 15px;
 }
-.currentGame-logForm.is-open {
-	display: block;
+.currentGame-logForm .form-group {
+	margin-bottom: 8px;
 }
 .currentGame-logForm .control-label {
 	padding-top: 8px;
@@ -75,4 +75,9 @@ hr {
 }
 .activeQueueList p {
 	margin: 0;
+}
+.addMatchBtn {
+	position: absolute;
+	right: 10px;
+	top: 15px;
 }

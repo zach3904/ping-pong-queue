@@ -1,23 +1,68 @@
 import React from 'react/addons';
 import ReactAsync from 'react-async';
 
+var cx = React.addons.classSet;
+
 var ActiveQueue = React.createClass({displayName: "ActiveQueue",
 
 	getInitialState: function () {
 		return {
-			activeQueue: []
+			activeQueue: [],
+			isAddMatchFormOpen: false
 		};
+	},
+
+	toggleAddMatchForm: function () {
+		this.setState({ isAddMatchFormOpen: !this.state.isAddMatchFormOpen });
+	},
+
+	render: function () {
+		var addMatchClasses = cx({
+			'hidden': !this.state.isAddMatchFormOpen
+		});
+
+		return (
+			React.createElement("div", null, 
+				React.createElement("button", {type: "button", className: "addMatchBtn btn btn-primary", onClick: this.toggleAddMatchForm}, "Add Your Match"), 
+
+				React.createElement("div", {className: 'addMatchForm ' + addMatchClasses}, 
+					React.createElement(AddMatchForm, null)
+				), 
+				
+				React.createElement("ul", {className: "activeQueueList list-unstyled"}, 
+					React.createElement("hr", null), 
+					React.createElement("li", null, React.createElement(ActiveQueueItem, null)), 
+					React.createElement("hr", null), 
+					React.createElement("li", null, React.createElement(ActiveQueueItem, null)), 
+					React.createElement("hr", null), 
+					React.createElement("li", null, React.createElement(ActiveQueueItem, null))
+				)
+			)
+		);
+	}
+
+});
+
+var AddMatchForm = React.createClass({displayName: "AddMatchForm",
+
+	getDefaultProps: function () {
+		return {};
 	},
 
 	render: function () {
 		return (
-			React.createElement("ul", {className: "activeQueueList list-unstyled"}, 
-				React.createElement("hr", null), 
-				
-				React.createElement("li", null, 
-					this.state.activeQueue.map(function (queueItem, i) {
-						React.createElement(ActiveQueueItem, {item: queueItem})
-					})
+			React.createElement("form", {className: "form-horizontal"}, 
+				React.createElement("div", {className: "form-group"}, 
+					React.createElement("label", {htmlFor: "player1", className: "control-label col-xs-3"}, "Player 1"), 
+					React.createElement("div", {className: "col-xs-9"}, 
+						React.createElement("input", {type: "text", name: "player1", id: "player1", className: "form-control"})
+					)
+				), 
+				React.createElement("div", {className: "form-group"}, 
+					React.createElement("label", {htmlFor: "player2", className: "control-label col-xs-3"}, "Player 2"), 
+					React.createElement("div", {className: "col-xs-9"}, 
+						React.createElement("input", {type: "text", name: "player2", id: "player2", className: "form-control"})
+					)
 				)
 			)
 		);
@@ -51,6 +96,6 @@ var ActiveQueueItem = React.createClass({displayName: "ActiveQueueItem",
 		);
 	}
 
-})
+});
 
 React.render(React.createElement(ActiveQueue, null), document.querySelector('#activeQueue'));

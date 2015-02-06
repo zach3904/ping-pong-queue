@@ -1,25 +1,70 @@
 import React from 'react/addons';
 import ReactAsync from 'react-async';
 
+var cx = React.addons.classSet;
+
 var ActiveQueue = React.createClass({
 
 	getInitialState: function () {
 		return {
-			activeQueue: []
+			activeQueue: [],
+			isAddMatchFormOpen: false
 		};
+	},
+
+	toggleAddMatchForm: function () {
+		this.setState({ isAddMatchFormOpen: !this.state.isAddMatchFormOpen });
+	},
+
+	render: function () {
+		var addMatchClasses = cx({
+			'hidden': !this.state.isAddMatchFormOpen
+		});
+
+		return (
+			<div>
+				<button type="button" className="addMatchBtn btn btn-primary" onClick={this.toggleAddMatchForm}>Add Your Match</button>
+
+				<div className={'addMatchForm ' + addMatchClasses}>
+					<AddMatchForm/>
+				</div>
+				
+				<ul className="activeQueueList list-unstyled">
+					<hr/>
+					<li><ActiveQueueItem/></li>
+					<hr/>
+					<li><ActiveQueueItem/></li>
+					<hr/>
+					<li><ActiveQueueItem/></li>
+				</ul>
+			</div>
+		);
+	}
+
+});
+
+var AddMatchForm = React.createClass({
+
+	getDefaultProps: function () {
+		return {};
 	},
 
 	render: function () {
 		return (
-			<ul className="activeQueueList list-unstyled">
-				<hr />
-				
-				<li>
-					{this.state.activeQueue.map(function (queueItem, i) {
-						<ActiveQueueItem item={queueItem} />
-					})}
-				</li>
-			</ul>
+			<form className="form-horizontal">
+				<div className="form-group">
+					<label htmlFor="player1" className="control-label col-xs-3">Player 1</label>
+					<div className="col-xs-9">
+						<input type="text" name="player1" id="player1" className="form-control"/>
+					</div>
+				</div>
+				<div className="form-group">
+					<label htmlFor="player2" className="control-label col-xs-3">Player 2</label>
+					<div className="col-xs-9">
+						<input type="text" name="player2" id="player2" className="form-control"/>
+					</div>
+				</div>
+			</form>
 		);
 	}
 
@@ -51,6 +96,6 @@ var ActiveQueueItem = React.createClass({
 		);
 	}
 
-})
+});
 
 React.render(<ActiveQueue/>, document.querySelector('#activeQueue'));

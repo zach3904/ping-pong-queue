@@ -1,4 +1,5 @@
 import React from 'react/addons';
+import Ajax from '../lib/Ajax';
 
 var cx = React.addons.classSet;
 
@@ -24,18 +25,19 @@ var CurrentGame = React.createClass({
 		this.setState({ isLogGameOpen: !this.state.isLogGameOpen });
 	},
 
-	finishGame: function () {},
-
 	render: function () {
 		var logGameClasses = cx({
-			'is-open': this.state.isLogGameOpen 
+			'hidden': !this.state.isLogGameOpen 
 		});
+
+		var firstPlayerName = this.state.match.player1.name.split(' ')[0] + ' ' + this.state.match.player1.name.split(' ')[1].substring(0, 1) + '.';
+		var secondPlayerName = this.state.match.player2.name.split(' ')[0] + ' ' + this.state.match.player2.name.split(' ')[1].substring(0, 1) + '.';
 
 		return (
 			<div>
-				<h4 className="currentGame-players"><strong>{this.state.match.player1.name}</strong> ({this.state.match.player1.record})</h4>
+				<h4 className="currentGame-players"><strong>{firstPlayerName}</strong> ({this.state.match.player1.record})</h4>
 				<h5>vs.</h5>
-				<h4><strong>{this.state.match.player2.name}</strong> ({this.state.match.player2.record})</h4>
+				<h4><strong>{secondPlayerName}</strong> ({this.state.match.player2.record})</h4>
 				
 				<hr/>
 				
@@ -43,9 +45,8 @@ var CurrentGame = React.createClass({
 					<div className="pull-left">
 						<p>Estimated time remaining: 9 min</p>
 					</div>
-					<div className="btn-group pull-right">
+					<div className="pull-right">
 						<button type="button" className="btn btn-default" onClick={this.openLogForm}>Log Game</button>
-						<button type="button" className="btn btn-default" onClick={this.finishGame}>Finish Game</button>
 					</div>
 				</div>
 
@@ -59,34 +60,49 @@ var CurrentGame = React.createClass({
 
 var LogGameForm = React.createClass({
 
-	getDefaultProps: function () {
+	getInitialState: function () {
 		return {
-			score1: '0',
-			score2: '0'
+			match: {}
 		};
 	},
 
 	updateScore: function (val, inputId) {
-		this.props[inputId] = val;
-		console.log(this.props);
+		this.props.results[inputId].score = val;
+	},
+
+	submitGame: function () {
+		Ajax.post({
+			url: '/finishGame',
+			data: {
+				matchId: 24,
+				results: this.props.results
+			}
+		}, {
+			success: function () {
+				console.log('success');
+			},
+			error: function (e) {
+				console.log('error', e);
+			}
+		});
 	},
 
 	render: function () {
 		return (
-			<form className="form-horizontal">
+			<form className="form-horizontal" onSubmit={this.submitGame}>
 				<div className="form-group">
-					<label htmlFor="score1" className="control-label col-xs-7">{this.props.match.player1.name}</label>
+					<label htmlFor="score1" className="control-label col-xs-7"><strong>{this.props.match.player1.name}</strong></label>
 					<div className="col-xs-5">
 						<LogGameFormInput inputId="score1" updateScore={this.updateScore}/>
 					</div>
 				</div>
 				<div className="form-group">
-					<label htmlFor="score2" className="control-label col-xs-7">{this.props.match.player2.name}</label>
+					<label htmlFor="score2" className="control-label col-xs-7"><strong>{this.props.match.player2.name}</strong></label>
 					<div className="col-xs-5">
 						<LogGameFormInput inputId="score2" updateScore={this.updateScore}/>
 					</div>
 				</div>
-				<button type="button" className="btn btn-default">Submit</button>
+				<button type="submit" className="btn btn-default pull-right">Submit</button>
 			</form>
 		);
 	}
@@ -104,7 +120,8 @@ var LogGameFormInput = React.createClass({
 	getDefaultProps: function () {
 		return {
 			minVal: 0,
-			maxVal: 21
+			maxVal: 21,
+			inputId: ''
 		};
 	},
 

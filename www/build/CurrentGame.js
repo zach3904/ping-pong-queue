@@ -1,4 +1,5 @@
 import React from 'react/addons';
+import Ajax from '../lib/Ajax';
 
 var cx = React.addons.classSet;
 
@@ -24,18 +25,19 @@ var CurrentGame = React.createClass({displayName: "CurrentGame",
 		this.setState({ isLogGameOpen: !this.state.isLogGameOpen });
 	},
 
-	finishGame: function () {},
-
 	render: function () {
 		var logGameClasses = cx({
-			'is-open': this.state.isLogGameOpen 
+			'hidden': !this.state.isLogGameOpen 
 		});
+
+		var firstPlayerName = this.state.match.player1.name.split(' ')[0] + ' ' + this.state.match.player1.name.split(' ')[1].substring(0, 1) + '.';
+		var secondPlayerName = this.state.match.player2.name.split(' ')[0] + ' ' + this.state.match.player2.name.split(' ')[1].substring(0, 1) + '.';
 
 		return (
 			React.createElement("div", null, 
-				React.createElement("h4", {className: "currentGame-players"}, React.createElement("strong", null, this.state.match.player1.name), " (", this.state.match.player1.record, ")"), 
+				React.createElement("h4", {className: "currentGame-players"}, React.createElement("strong", null, firstPlayerName), " (", this.state.match.player1.record, ")"), 
 				React.createElement("h5", null, "vs."), 
-				React.createElement("h4", null, React.createElement("strong", null, this.state.match.player2.name), " (", this.state.match.player2.record, ")"), 
+				React.createElement("h4", null, React.createElement("strong", null, secondPlayerName), " (", this.state.match.player2.record, ")"), 
 				
 				React.createElement("hr", null), 
 				
@@ -43,9 +45,8 @@ var CurrentGame = React.createClass({displayName: "CurrentGame",
 					React.createElement("div", {className: "pull-left"}, 
 						React.createElement("p", null, "Estimated time remaining: 9 min")
 					), 
-					React.createElement("div", {className: "btn-group pull-right"}, 
-						React.createElement("button", {type: "button", className: "btn btn-default", onClick: this.openLogForm}, "Log Game"), 
-						React.createElement("button", {type: "button", className: "btn btn-default", onClick: this.finishGame}, "Finish Game")
+					React.createElement("div", {className: "pull-right"}, 
+						React.createElement("button", {type: "button", className: "btn btn-default", onClick: this.openLogForm}, "Log Game")
 					)
 				), 
 
@@ -59,34 +60,49 @@ var CurrentGame = React.createClass({displayName: "CurrentGame",
 
 var LogGameForm = React.createClass({displayName: "LogGameForm",
 
-	getDefaultProps: function () {
+	getInitialState: function () {
 		return {
-			score1: '0',
-			score2: '0'
+			match: {}
 		};
 	},
 
 	updateScore: function (val, inputId) {
-		this.props[inputId] = val;
-		console.log(this.props);
+		this.props.results[inputId].score = val;
+	},
+
+	submitGame: function () {
+		Ajax.post({
+			url: '/finishGame',
+			data: {
+				matchId: 24,
+				results: this.props.results
+			}
+		}, {
+			success: function () {
+				console.log('success');
+			},
+			error: function (e) {
+				console.log('error', e);
+			}
+		});
 	},
 
 	render: function () {
 		return (
-			React.createElement("form", {className: "form-horizontal"}, 
+			React.createElement("form", {className: "form-horizontal", onSubmit: this.submitGame}, 
 				React.createElement("div", {className: "form-group"}, 
-					React.createElement("label", {htmlFor: "score1", className: "control-label col-xs-7"}, this.props.match.player1.name), 
+					React.createElement("label", {htmlFor: "score1", className: "control-label col-xs-7"}, React.createElement("strong", null, this.props.match.player1.name)), 
 					React.createElement("div", {className: "col-xs-5"}, 
 						React.createElement(LogGameFormInput, {inputId: "score1", updateScore: this.updateScore})
 					)
 				), 
 				React.createElement("div", {className: "form-group"}, 
-					React.createElement("label", {htmlFor: "score2", className: "control-label col-xs-7"}, this.props.match.player2.name), 
+					React.createElement("label", {htmlFor: "score2", className: "control-label col-xs-7"}, React.createElement("strong", null, this.props.match.player2.name)), 
 					React.createElement("div", {className: "col-xs-5"}, 
 						React.createElement(LogGameFormInput, {inputId: "score2", updateScore: this.updateScore})
 					)
 				), 
-				React.createElement("button", {type: "button", className: "btn btn-default"}, "Submit")
+				React.createElement("button", {type: "submit", className: "btn btn-default pull-right"}, "Submit")
 			)
 		);
 	}
@@ -104,7 +120,8 @@ var LogGameFormInput = React.createClass({displayName: "LogGameFormInput",
 	getDefaultProps: function () {
 		return {
 			minVal: 0,
-			maxVal: 21
+			maxVal: 21,
+			inputId: ''
 		};
 	},
 
