@@ -21,6 +21,25 @@ app.get('/', function(req, res) {
 	res.render('dashboard');
 });
 
+
+var playerService = require('../services/PlayerService')
+app.get('/player', playerService.getPlayerById);
+
+var matchService = require('../services/MatchService')
+app.get('/match', matchService.getMatchById);
+
+var matchQueueService = require('../services/MatchQueueService')
+app.get('/matchQueue', matchQueueService.getMatchQueueById);
+
+var challengeService = require('../services/ChallengeService')
+app.get('/challenge', challengeService.getChallengeById);
+
+var outcomeService = require('../services/OutcomeService')
+app.get('/outcome', outcomeService.getOutcomeById);
+
+var singlePlayerService = require('../services/SinglePlayerService')
+app.get('/singlePlayer', singlePlayerService.getSinglePlayerById);
+
 app.use(express.static(path.join(serverDir, '..', 'www')));
 
 app.use(function(req, res, next) {
