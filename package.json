@@ -7,7 +7,8 @@
     "express": "^4.11.2",
     "express-handlebars": "^1.1.0",
     "handlebars": "^2.0.0",
-    "react": "^0.12.2"
+    "react": "^0.12.2",
+    "react-async": "^2.0.1"
   },
   "devDependencies": {
     "jspm": "^0.11.5",

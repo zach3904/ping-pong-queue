@@ -9,3 +9,4 @@ import EventBus from '../lib/EventBus'; // Global event bus for inter-component 
 
 // Section components
 import CurrentGame from 'build/CurrentGame';
+import ActiveQueue from 'build/ActiveQueue';

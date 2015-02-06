@@ -54,3 +54,25 @@ hr {
 .currentGame-players span {
 	display: inline-block;
 }
+.currentGame-logForm {
+	display: none;
+	margin-top: 15px;
+}
+.currentGame-logForm.is-open {
+	display: block;
+}
+.currentGame-logForm .control-label {
+	padding-top: 8px;
+	text-align: right;
+}
+.currentGame-logForm .form-control {
+	color: #fff;
+}
+
+
+.activeQueueList hr:first-child {
+	display: none;
+}
+.activeQueueList p {
+	margin: 0;
+}
