@@ -70,21 +70,8 @@ var LogGameForm = React.createClass({displayName: "LogGameForm",
 		this.props.results[inputId].score = val;
 	},
 
-	submitGame: function () {
-		Ajax.post({
-			url: '/finishGame',
-			data: {
-				matchId: 24,
-				results: this.props.results
-			}
-		}, {
-			success: function () {
-				console.log('success');
-			},
-			error: function (e) {
-				console.log('error', e);
-			}
-		});
+	submitGame: function (e) {
+		e.preventDefault();
 	},
 
 	render: function () {
@@ -102,7 +89,7 @@ var LogGameForm = React.createClass({displayName: "LogGameForm",
 						React.createElement(LogGameFormInput, {inputId: "score2", updateScore: this.updateScore})
 					)
 				), 
-				React.createElement("button", {type: "submit", className: "btn btn-default pull-right"}, "Submit")
+				React.createElement("button", {type: "submit", onClick: this.submitGame, className: "btn btn-default pull-right"}, "Submit")
 			)
 		);
 	}

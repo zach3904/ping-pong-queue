@@ -25,8 +25,12 @@ var ActiveQueue = React.createClass({
 			<div>
 				<button type="button" className="addMatchBtn btn btn-primary" onClick={this.toggleAddMatchForm}>Add Your Match</button>
 
-				<div className={'addMatchForm ' + addMatchClasses}>
-					<AddMatchForm/>
+				<div className={'addMatchForm panel panel-default ' + addMatchClasses}>
+					<div className="panel-body">
+						<h5>New Match</h5>
+
+						<AddMatchForm/>
+					</div>
 				</div>
 				
 				<ul className="activeQueueList list-unstyled">
@@ -49,9 +53,13 @@ var AddMatchForm = React.createClass({
 		return {};
 	},
 
+	addMatch: function (e) {
+		e.preventDefault();
+	},
+
 	render: function () {
 		return (
-			<form className="form-horizontal">
+			<form className="form-horizontal" onSubmit={this.addMatch}>
 				<div className="form-group">
 					<label htmlFor="player1" className="control-label col-xs-3">Player 1</label>
 					<div className="col-xs-9">
@@ -64,6 +72,7 @@ var AddMatchForm = React.createClass({
 						<input type="text" name="player2" id="player2" className="form-control"/>
 					</div>
 				</div>
+				<button type="submit" className="btn btn-primary pull-right">Submit</button>
 			</form>
 		);
 	}
