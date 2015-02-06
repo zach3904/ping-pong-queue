@@ -1,6 +1,11 @@
 import React from 'react/addons';
 
 var CurrentGame = React.createClass({
+
+	openLogForm: function () {},
+
+	finishGame: function () {},
+
 	render: function () {
 		return (
 			<div>
@@ -14,9 +19,10 @@ var CurrentGame = React.createClass({
 					<p>Estimated time remaining: 8 min</p>
 				</div>
 				<div className="btn-group pull-right">
-					<button type="button" className="btn btn-default">Log Game</button>
-					<button type="button" className="btn btn-default">Finish Game</button>
+					<button type="button" className="btn btn-default" onClick={this.openLogForm}>Log Game</button>
+					<button type="button" className="btn btn-default" onClick={this.finishGame}>Finish Game</button>
 				</div>
+
 			</div>
 		);
 	}
