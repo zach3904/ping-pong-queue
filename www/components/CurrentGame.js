@@ -1,3 +1,18 @@
+import React from 'react';
+
+//React.render(<h1>Testing</h1>, document.getElementById('currentGame'));
+
+/*
+var testClass = React.createClass({
+    render: function () {
+        return (
+            <h1>Testing Class</h1>
+        )
+    }
+});
+React.render(testClass, document.getElementById('currentGame'));
+*/
+
 var CurrentGame = React.createClass({
 	render: function () {
 		return (
@@ -5,9 +20,9 @@ var CurrentGame = React.createClass({
 				<h4 className="currentGame-players"><strong>Zachary R.</strong> (37-5)</h4>
 				<h5>vs.</h5>
 				<h4><strong>Matthew O.</strong> (100-0)</h4>
-				
-				<hr>
-				
+
+				<hr/>
+
 				<div className="pull-left">
 					<p>Estimated time remaining: 8 min</p>
 				</div>
@@ -20,4 +35,4 @@ var CurrentGame = React.createClass({
 	}
 });
 
-React.render(CurrentGame, document.querySelector('#currentGame'));
+React.render(<CurrentGame/>, document.querySelector('currentGame'));

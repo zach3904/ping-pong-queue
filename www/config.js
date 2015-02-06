@@ -1,8 +1,9 @@
 System.config({
   "baseURL": "/",
+  "transpiler": "6to5",
   "paths": {
     "*": "*.js",
-    "ping-pong-queue/*": "app/*.js",
+    "ping-pong-queue/*": "lib/*.js",
     "npm:*": "jspm_packages/npm/*.js",
     "github:*": "jspm_packages/github/*.js"
   }
