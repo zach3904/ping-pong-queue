@@ -5,17 +5,20 @@ module.exports = {
     getPlayerById: function (request, response) {
 
         var db = require('../db.js');
-        db.query('SELECT $1::int AS number', ['1'], function (err, result) {
-            console.log(result.rows[0].number);
+        db.query('SELECT * FROM ping_pong.players WHERE player_key = $1::int', ['1'], function (err, result) {
+            if(err) {
+                return console.error('error running query', err);
+            }
+            response.send(result.rows[0]);
+            //response.send({
+            //    player_key: 1,
+            //    name: result.rows[0].name,
+            //    hipchat_name: result.rows[0].hipchat_name,
+            //    email_address: result.rows[0].email_address,
+            //    skill_level: result.rows[0].skill_level,
+            //    tagline: result.rows[0].tagline
+            //});
         });
 
-        response.send({
-            player_key: 1,
-            name: 'molsen',
-            hipchat_name: '@molsen',
-            email_address: 'matthewo@porch.com',
-            skill_level: 'INTERMEDIATE',
-            tagline: 'YeaH BuddY!'
-        });
     }
-}
+};
