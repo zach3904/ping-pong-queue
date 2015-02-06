@@ -7,3 +7,4 @@ node_modules/jspm/
 # Intellij Project
 *.iml
 
+www/build/.module-cache

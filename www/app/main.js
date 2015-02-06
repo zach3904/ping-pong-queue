@@ -5,4 +5,4 @@ import _ from 'underscore';
 //bootstrap();
 
 import React from 'react/addons';
-import CurrentGame from 'components/CurrentGame';
+import CurrentGame from 'build/CurrentGame';

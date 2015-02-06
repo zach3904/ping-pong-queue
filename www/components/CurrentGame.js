@@ -1,3 +1,5 @@
+import React from 'react/addons';
+
 var CurrentGame = React.createClass({
 	render: function () {
 		return (
@@ -6,7 +8,7 @@ var CurrentGame = React.createClass({
 				<h5>vs.</h5>
 				<h4><strong>Matthew O.</strong> (100-0)</h4>
 				
-				<hr>
+				<hr/>
 				
 				<div className="pull-left">
 					<p>Estimated time remaining: 8 min</p>
@@ -20,4 +22,4 @@ var CurrentGame = React.createClass({
 	}
 });
 
-React.render(CurrentGame, document.querySelector('#currentGame'));
+React.render(<CurrentGame/>, document.querySelector('#currentGame'));
