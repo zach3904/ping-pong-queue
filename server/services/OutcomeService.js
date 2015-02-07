@@ -1,9 +1,10 @@
 'use strict';
 
 module.exports = {
-    name: 'outcomeService',
-    getOutcomeById: function (request, response) {
 
+    name: 'outcomeService',
+
+    getOutcomeById: function (request, response) {
         var db = require('../db.js');
         db.query('SELECT * FROM ping_pong.outcomes WHERE outcome_key = $1::int', ['1'], function (err, result) {
             if(err) {
@@ -19,5 +20,15 @@ module.exports = {
             //    recorded_dtm: '2014-02-06 11:30:00'
             //});
         });
+    },
+
+    addOutcome: function (request, response) {
+        var db = require('../db.js');
+        db.query('INSERT INTO ping_pong.outcomes (match_key, winning_team, winning_score, losing_score) VALUES ($1::bigint, $2::team, $3::int, $4::int) RETURNING outcome_key;', [1, 'CHALLENGER', 21, 19], function (err, result) {
+            if(err) {
+                return console.error('error running query', err);
+            }
+            response.send(result.rows[0].outcome_key);
+        });
     }
-}
+};

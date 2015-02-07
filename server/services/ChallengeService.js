@@ -1,9 +1,10 @@
 'use strict';
 
 module.exports = {
-    name: 'challengeService',
-    getChallengeById: function (request, response) {
 
+    name: 'challengeService',
+
+    getChallengeById: function (request, response) {
         var db = require('../db.js');
         db.query('SELECT * FROM ping_pong.challenges WHERE challenge_key = $1::int', ['1'], function (err, result) {
             if(err) {
@@ -18,6 +19,16 @@ module.exports = {
             //    rejected_dtm: null,
             //    cancelled_dtm: null
             //});
+        });
+    },
+
+    addChallenge: function (request, response) {
+        var db = require('../db.js');
+        db.query('INSERT INTO ping_pong.challenges (match_key) VALUES ($1::bigint) RETURNING challenge_key;', [1], function (err, result) {
+            if(err) {
+                return console.error('error running query', err);
+            }
+            response.send(result.rows[0].challenge_key);
         });
     }
 };
