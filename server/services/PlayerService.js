@@ -6,10 +6,13 @@ module.exports = {
 
     getPlayerById: function (request, response) {
         var db = require('../db.js');
-        db.query('SELECT * FROM ping_pong.players WHERE player_key = $1::int', ['1'], function (err, result) {
+        db.query('SELECT * FROM ping_pong.players WHERE player_key = $1::int',
+            [request.query.player_id], function (err, result) {
+
             if(err) {
                 return console.error('error running query', err);
             }
+
             response.send(result.rows[0]);
             //response.send({
             //    player_key: 1,
@@ -25,10 +28,13 @@ module.exports = {
     addPlayer: function (request, response) {
 
         var db = require('../db.js');
-        db.query('INSERT INTO ping_pong.players (name, hipchat_name, email_address, skill_level, tagline) VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) RETURNING player_key;', ['Test Player', '@testplayer', 'testplayer@porch.com', 'BEGINNER', 'Hello World'], function (err, result) {
+        db.query('INSERT INTO ping_pong.players (name, hipchat_name, email_address, skill_level, tagline) VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) RETURNING player_key;',
+            [request.body.name, request.body.hipchat_name, request.body.email_address, request.body.skill_level, request.body.tagline], function (err, result) {
+
             if(err) {
                 return console.error('error running query', err);
             }
+
             response.send(result.rows[0].player_key);
             //response.sendStatus(200);
         });

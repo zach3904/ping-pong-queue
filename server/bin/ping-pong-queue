@@ -21,6 +21,9 @@ app.get('/', function(req, res) {
 	res.render('dashboard');
 });
 
+var bodyParser = require('body-parser')
+app.use(bodyParser.json()); // to support JSON-encoded bodies
+//app.use(express.json()); // to support JSON-encoded bodies
 
 var playerService = require('../services/PlayerService')
 app.get('/player', playerService.getPlayerById);
