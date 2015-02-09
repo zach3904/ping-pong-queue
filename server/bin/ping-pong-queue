@@ -21,24 +21,33 @@ app.get('/', function(req, res) {
 	res.render('dashboard');
 });
 
+var bodyParser = require('body-parser')
+app.use(bodyParser.json()); // to support JSON-encoded bodies
+//app.use(express.json()); // to support JSON-encoded bodies
 
 var playerService = require('../services/PlayerService')
 app.get('/player', playerService.getPlayerById);
+app.post('/player', playerService.addPlayer);
 
 var matchService = require('../services/MatchService')
 app.get('/match', matchService.getMatchById);
+app.post('/match', matchService.addMatch);
 
 var matchQueueService = require('../services/MatchQueueService')
 app.get('/matchQueue', matchQueueService.getMatchQueueById);
+app.post('/matchQueue', matchQueueService.addMatchToQueue);
 
 var challengeService = require('../services/ChallengeService')
 app.get('/challenge', challengeService.getChallengeById);
+app.post('/challenge', challengeService.addChallenge);
 
 var outcomeService = require('../services/OutcomeService')
 app.get('/outcome', outcomeService.getOutcomeById);
+app.post('/outcome', outcomeService.addOutcome);
 
 var singlePlayerService = require('../services/SinglePlayerService')
 app.get('/singlePlayer', singlePlayerService.getSinglePlayerById);
+app.post('/singlePlayer', singlePlayerService.addSinglePlayer);
 
 app.use(express.static(path.join(serverDir, '..', 'www')));
 
