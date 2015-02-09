@@ -1,12 +1,13 @@
+import _ from 'underscore';
 
 /**
  * Simple ajax client
  * we can replace this with something more full-featured as needed
  */
-"use strict";
+'use strict';
 
 
-module.exports = {
+var AjaxMixin = {
     post: function(options, callbacks) {
         if (! options || ! options.url) {
             return callbacks.error(new Error('bad input, options.url is required'));

@@ -1,5 +1,5 @@
 import React from 'react/addons';
-import Ajax from '../lib/Ajax';
+import AjaxMixin from '../lib/Ajax';
 
 var cx = React.addons.classSet;
 
@@ -59,19 +59,54 @@ var CurrentGame = React.createClass({
 });
 
 var LogGameForm = React.createClass({
-
 	getInitialState: function () {
 		return {
-			match: {}
+			match: {},
+			scores: {
+				score1: '',
+				score2: ''
+			}
 		};
 	},
 
-	updateScore: function (val, inputId) {
-		this.props.results[inputId].score = val;
+	getDefaultProps: function () {
+		return {
+			scoreMinVal: 0,
+			scoreMaxVal: 21
+		};
+	},
+
+	handleScoreChange: function (e) {
+		var val = e.target.value;
+
+		if (val >= this.props.scoreMinVal && val <= this.props.scoreMaxVal || val === '') {
+			this.setState({ scores[e.target.id]: val });
+		}
 	},
 
 	submitGame: function (e) {
 		e.preventDefault();
+
+		// this.post({
+		// 	url: '/asdf',
+		// 	data: {
+		// 		score1: {
+		// 			name: this.props.match.player1,
+		// 			score: this.refs.score1.value
+		// 		},
+		// 		score2: {
+		// 			name: this.props.match.player2,
+		// 			score: this.refs.score2.value
+		// 		}
+		// 	}
+		// }, {
+		// 	success: function (e) {
+		// 		console.log(e);
+		// 	},
+		// 	error: function (e) {
+		// 		console.log(e);
+		// 	}
+		// })
 	},
 
 	render: function () {
@@ -80,59 +115,31 @@ var LogGameForm = React.createClass({
 				<div className="form-group">
 					<label htmlFor="score1" className="control-label col-xs-7"><strong>{this.props.match.player1.name}</strong></label>
 					<div className="col-xs-5">
-						<LogGameFormInput inputId="score1" updateScore={this.updateScore}/>
+						<input type="number" required
+							value={this.state.scores.score1}
+							onChange={this.handleScoreChange}
+							min={this.props.scoreMinVal}
+							max={this.props.scoreMaxVal}
+							name="score1"
+							id="score1"
+							className="form-control" />
 					</div>
 				</div>
 				<div className="form-group">
 					<label htmlFor="score2" className="control-label col-xs-7"><strong>{this.props.match.player2.name}</strong></label>
 					<div className="col-xs-5">
-						<LogGameFormInput inputId="score2" updateScore={this.updateScore}/>
+						<input type="number" required
+							value={this.state.scores.score2}
+							onChange={this.handleScoreChange}
+							min={this.props.scoreMinVal}
+							max={this.props.scoreMaxVal}
+							name="score2"
+							id="score2"
+							className="form-control" />
 					</div>
 				</div>
 				<button type="submit" onClick={this.submitGame} className="btn btn-default pull-right">Submit</button>
 			</form>
-		);
-	}
-
-});
-
-var LogGameFormInput = React.createClass({
-
-	getInitialState: function () {
-		return {
-			inputVal: ''
-		};
-	},
-
-	getDefaultProps: function () {
-		return {
-			minVal: 0,
-			maxVal: 21,
-			inputId: ''
-		};
-	},
-
-	updateVal: function (e) {
-		var val = e.target.value;
-
-		if (val >= this.props.minVal && val <= this.props.maxVal || val === '') {
-			this.setState({ inputVal: val });
-			this.props.updateScore(val, e.target.id);
-		}
-
-	},
-
-	render: function () {
-		return (
-			<input type="number"
-				value={this.state.inputVal}
-				required
-				onChange={this.updateVal}
-				min={this.props.minVal}
-				max={this.props.maxVal}
-				name={this.props.inputId}
-				id={this.props.inputId}
-				className="form-control" />
 		);
 	}
 
