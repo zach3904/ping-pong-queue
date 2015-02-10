@@ -1,28 +1,33 @@
 'use strict';
 
+var Promise = require('promise');
+var db = require('../db.js');
+
 module.exports = {
 
     name: 'playerDAO',
 
     getPlayerById: function (player_key) {
-        var db = require('../db.js');
-        db.query('SELECT * FROM ping_pong.players WHERE player_key = $1::int',
-            [player_key], function (err, result) {
+        return new Promise(function (resolve, reject) {
+            db.query('SELECT * FROM ping_pong.players WHERE player_key = $1::bigint',
+                [player_key], function (err, result) {
 
-                if (err) {
-                    return console.error('error running query', err);
-                }
+                    if (err) {
+                        reject(err);
+                    }
 
-                response.send(result.rows[0]);
-                //response.send({
-                //    player_key: 1,
-                //    name: result.rows[0].name,
-                //    hipchat_name: result.rows[0].hipchat_name,
-                //    email_address: result.rows[0].email_address,
-                //    skill_level: result.rows[0].skill_level,
-                //    tagline: result.rows[0].tagline
-                //});
-            });
+                    resolve(result.rows[0]);
+
+                    // {
+                    //    player_key: 1,
+                    //    name: result.rows[0].name,
+                    //    hipchat_name: result.rows[0].hipchat_name,
+                    //    email_address: result.rows[0].email_address,
+                    //    skill_level: result.rows[0].skill_level,
+                    //    tagline: result.rows[0].tagline
+                    // }
+                });
+        });
     },
 
     getPlayerByAny: function (criteria, params) {
@@ -39,63 +44,72 @@ module.exports = {
                 } else {
                     query += ' AND '
                 }
-                query += criteria[i].column_name + '=$' + i + '::' + criteria[i].data_type;
+                query += criteria[i].column_name + '=$' + (i + 1) + '::' + criteria[i].data_type;
             }
         }
 
-        var db = require('../db.js');
-
-        db.query(query, params, function (err, result) {
-            if (err) {
-                return console.error('error running query', err);
-            }
-            return result.rows[0];
+        return new Promise(function (resolve, reject) {
+            db.query(query, params, function (err, result) {
+                if (err) {
+                    reject(err);
+                }
+                resolve(result.rows[0]);
+            });
         });
     },
 
     searchPlayers: function (query) {
-        var db = require('../db.js');
-        db.query('SELECT' +
-            '   player_key,' +
-            '   (name ILIKE \'%$1::text%\') AS matched_on_name' +
-            '   (hipchat_name ILIKE \'%$1::text%\') AS matched_on_hipchat_name' +
-            '   (email_address ILIKE \'%$1::text%\') AS matched_on_email_address' +
-            ' FROM ping_pong.players' +
-            ' WHERE name ILIKE \'%$1::text%\'' +
-            '   OR hipchat_name ILIKE \'%$1::text%\'' +
-            '   OR email_address ILIKE \'%$1::text%\'',
-            [query], function (err, result) {
+        //TODO: NOT WORKING
+        return new Promise(function (resolve, reject) {
+
+            var queryStr = 'SELECT' +
+                '   player_key,' +
+                '   (name ILIKE \'%$1::text%\') AS matched_on_name,' +
+                '   (hipchat_name ILIKE \'%$1::text%\') AS matched_on_hipchat_name,' +
+                '   (email_address ILIKE \'%$1::text%\') AS matched_on_email_address' +
+                ' FROM ping_pong.players' +
+                ' WHERE name ILIKE \'%$1::text%\'' +
+                '   OR hipchat_name ILIKE \'%$1::text%\'' +
+                '   OR email_address ILIKE \'%$1::text%\'';
+
+            console.log(queryStr);
+            console.log(query);
+
+            db.query(queryStr, [query], function (err, result) {
+                console.log(err);
+                console.log(result);
                 if (err) {
-                    return console.error('error running query', err);
+                    reject(err);
                 }
-                return result.rows;
+                resolve(result.rows);
             });
+        });
     },
 
     addPlayer: function (player) {
-        var db = require('../db.js');
-        db.query('INSERT INTO ping_pong.players (name, hipchat_name, email_address, skill_level, tagline) VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) RETURNING player_key;',
-            [player.name, player.hipchat_name, player.email_address, player.skill_level, player.tagline], function (err, result) {
-
-                if (err) {
-                    return console.error('error running query', err);
-                }
-
-                return result.rows[0].player_key;
-            });
+        return new Promise(function (resolve, reject) {
+            db.query('INSERT INTO ping_pong.players (name, hipchat_name, email_address, skill_level, tagline)' +
+                ' VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) RETURNING player_key;',
+                [player.name, player.hipchat_name, player.email_address, player.skill_level, player.tagline], function (err, result) {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(result.rows[0].player_key);
+                });
+        });
     },
 
     updatePlayer: function (player) {
-        var db = require('../db.js');
-        db.query('UPDATE ping_pong.players (name, hipchat_name, email_address, skill_level, tagline) VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) WHERE player_key = $1::int;',
-            [player.name, player.hipchat_name, player.email_address, player.skill_level, player.tagline], function (err, result) {
-
-                if (err) {
-                    return console.error('error running query', err);
-                }
-
-                return result.rows[0].player_key;
-            });
+        return new Promise(function (resolve, reject) {
+            db.query('UPDATE ping_pong.players (name, hipchat_name, email_address, skill_level, tagline)' +
+                ' VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) WHERE player_key = $1::bigint;',
+                [player.name, player.hipchat_name, player.email_address, player.skill_level, player.tagline], function (err, result) {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(result.rows[0].player_key);
+                });
+        });
     },
 
     getMatchHistory: function (player_key) {

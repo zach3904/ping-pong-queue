@@ -1,53 +1,44 @@
 'use strict';
 
+var matchDAO = require('../daos/MatchDAO');
+
 module.exports = {
 
     name: 'matchService',
 
     getMatchById: function (request, response) {
-        var db = require('../db.js');
-        db.query('SELECT * FROM ping_pong.matches WHERE match_key = $1::int',
-            [request.query.match_id], function (err, result) {
-
-            if(err) {
-                return console.error('error running query', err);
-            }
-
-            response.send(result.rows[0]);
-            //response.send({
-            //    match_key: 1,
-            //    players: [
-            //        {
-            //            player_key: 1,
-            //            name: 'molsen',
-            //            hipchat_name: '@molsen',
-            //            email_address: 'matthewo@porch.com',
-            //            skill_level: 'INTERMEDIATE',
-            //            tagline: 'YeaH BuddY!'
-            //        },
-            //        {
-            //            player_key: 1,
-            //            name: 'molsen',
-            //            hipchat_name: '@molsen',
-            //            email_address: 'matthewo@porch.com',
-            //            skill_level: 'INTERMEDIATE',
-            //            tagline: 'YeaH BuddY!'
-            //        }
-            //    ]
-            //});
+        var promise = matchDAO.getMatchById(request.query.match_id);
+        promise.then(function (match) {
+            response.send(match);
+        }, function (err) {
+            console.error('Error in getMatchById: ', err);
         });
     },
 
     addMatch: function (request, response) {
-        var db = require('../db.js');
-        db.query('INSERT INTO ping_pong.matches VALUES (default) RETURNING match_key;',
-            [], function (err, result) {
+        var promise = matchDAO.createMatch();
+        promise.then(function (matchId) {
+            response.send(matchId);
+        }, function (err) {
+            console.error('Error in addMatch: ', err);
+        });
+    },
 
-            if(err) {
-                return console.error('error running query', err);
-            }
+    getMatchPlayers: function (request, response) {
+        var promise = matchDAO.getMatchPlayers();
+        promise.then(function (matchPlayers) {
+            response.send(matchPlayers);
+        }, function (err) {
+            console.error('Error in addMatch: ', err);
+        });
+    },
 
-            response.send(result.rows[0].match_key);
+    addMatchPlayer: function (request, response) {
+        var promise = matchDAO.createMatchPlayer(request.body);
+        promise.then(function (matchPlayerId) {
+            response.send(matchPlayerId);
+        }, function (err) {
+            console.error('Error in addMatch: ', err);
         });
     }
 };

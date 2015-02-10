@@ -1,40 +1,44 @@
 'use strict';
 
+var singlePlayerDAO = require('../daos/SinglePlayerDAO');
+
 module.exports = {
 
     name: 'singlePlayerService',
 
+    getSinglePlayers: function (request, response) {
+        var promise = singlePlayerDAO.getSinglePlayers();
+        promise.then(function (singlePlayers) {
+            response.send(singlePlayers);
+        }, function (err) {
+            console.error('Error in getSinglePlayers: ', err);
+        });
+    },
+
     getSinglePlayerById: function (request, response) {
-        var db = require('../db.js');
-        db.query('SELECT * FROM ping_pong.single_player_pool WHERE player_key = $1::int',
-            [request.query.player_id], function (err, result) {
-
-            if(err) {
-                return console.error('error running query', err);
-            }
-
-            response.send(result.rows[0]);
-            //response.send({
-            //    single_player_pool_key: 1,
-            //    player_key: 1,
-            //    skill_level: 'PRO STATUS',
-            //    match_type: 'SINGLES',
-            //    added_dtm: '2014-02-06 14:00:00'
-            //});
+        var promise = singlePlayerDAO.getSinglePlayerById(request.query.single_player_id);
+        promise.then(function (singlePlayerById) {
+            response.send(singlePlayerById);
+        }, function (err) {
+            console.error('Error in getSinglePlayerById: ', err);
         });
     },
 
     addSinglePlayer: function (request, response) {
-        //TODO: NOT WORKING
-        var db = require('../db.js');
-        db.query('INSERT INTO ping_pong.single_player_pool (player_key, skill_level, match_type) VALUES ($1::bigint, $2::skill_level, $3::match_type) RETURNING single_player_key;',
-            [request.body.player_key, request.body.skill_level, request.body.match_type], function (err, result) {
+        var promise = singlePlayerDAO.addSinglePlayer(request.query);
+        promise.then(function (singlePlayerId) {
+            response.send(singlePlayerId);
+        }, function (err) {
+            console.error('Error in addSinglePlayer: ', err);
+        });
+    },
 
-            if(err) {
-                return console.error('error running query', err);
-            }
-
-            response.send(result.rows[0].single_player_key);
+    removeSinglePlayer: function (request, response) {
+        var promise = singlePlayerDAO.removeSinglePlayer(request.query.single_player_id);
+        promise.then(function (result) {
+            response.sendStatus(200);
+        }, function (err) {
+            console.error('Error in removeSinglePlayer: ', err);
         });
     }
 };
