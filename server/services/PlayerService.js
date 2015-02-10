@@ -5,38 +5,51 @@ module.exports = {
     name: 'playerService',
 
     getPlayerById: function (request, response) {
-        var db = require('../db.js');
-        db.query('SELECT * FROM ping_pong.players WHERE player_key = $1::int',
-            [request.query.player_id], function (err, result) {
+        var playerById = playerDAO.getPlayerById(request.query.player_key);
+        response.send(playerById);
+    },
 
-            if(err) {
-                return console.error('error running query', err);
-            }
+    getPlayerByAny: function (request, response) {
 
-            response.send(result.rows[0]);
-            //response.send({
-            //    player_key: 1,
-            //    name: result.rows[0].name,
-            //    hipchat_name: result.rows[0].hipchat_name,
-            //    email_address: result.rows[0].email_address,
-            //    skill_level: result.rows[0].skill_level,
-            //    tagline: result.rows[0].tagline
-            //});
-        });
+        var criteria = [];
+        var params = [];
+
+        if (request.query.player_key)       {criteria += {column_name: 'player_key',    'data_type': 'int'}; params += request.query.player_key;}
+        if (request.query.name)             {criteria += {column_name: 'name',          'data_type': 'text'}; params += request.query.name;}
+        if (request.query.hipchat_name)     {criteria += {column_name: 'hipchat_name',  'data_type': 'text'}; params += request.query.hipchat_name;}
+        if (request.query.email_address)    {criteria += {column_name: 'email_address', 'data_type': 'text'}; params += request.query.email_address;}
+        if (request.query.skill_level)      {criteria += {column_name: 'skill_level',   'data_type': 'text'}; params += request.query.skill_level;}
+
+        var players = playerDAO.getPlayerByAny(criteria, params);
+        response.send(players);
+    },
+
+    searchPlayers: function (request, response) {
+        var matchedPlayers = playerDAO.searchPlayers(query);
+        response.send(matchedPlayers);
     },
 
     addPlayer: function (request, response) {
+        var insertedPlayerId = playerDAO.addPlayer(request.body);
+        response.send(insertedPlayerId);
+        //response.sendStatus(200);
+    },
 
-        var db = require('../db.js');
-        db.query('INSERT INTO ping_pong.players (name, hipchat_name, email_address, skill_level, tagline) VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) RETURNING player_key;',
-            [request.body.name, request.body.hipchat_name, request.body.email_address, request.body.skill_level, request.body.tagline], function (err, result) {
+    updatePlayer: function (request, response) {
+        var updatedPlayerId = playerDAO.updatePlayer(request.body);
+        response.send(updatedPlayer);
+        //response.sendStatus(200);
+    },
 
-            if(err) {
-                return console.error('error running query', err);
+    resolvePlayers: function (request, response) {
+        var resolvedPlayers = [];
+        for (var player in request.body.players) {
+            var resolvedPlayer = this.getPlayer(player);
+            if (!resolvedPlayer) {
+                resolvedPlayer = this.addPlayer(player);
             }
-
-            response.send(result.rows[0].player_key);
-            //response.sendStatus(200);
-        });
+            resolvedPlayers += resolvedPlayer;
+        }
+        response.send(resolvedPlayers);
     }
 };
