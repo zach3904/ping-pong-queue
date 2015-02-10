@@ -25,8 +25,12 @@ var ActiveQueue = React.createClass({displayName: "ActiveQueue",
 			React.createElement("div", null, 
 				React.createElement("button", {type: "button", className: "addMatchBtn btn btn-primary", onClick: this.toggleAddMatchForm}, "Add Your Match"), 
 
-				React.createElement("div", {className: 'addMatchForm ' + addMatchClasses}, 
-					React.createElement(AddMatchForm, null)
+				React.createElement("div", {className: 'addMatchForm panel panel-default ' + addMatchClasses}, 
+					React.createElement("div", {className: "panel-body"}, 
+						React.createElement("h5", null, "New Match"), 
+
+						React.createElement(AddMatchForm, null)
+					)
 				), 
 				
 				React.createElement("ul", {className: "activeQueueList list-unstyled"}, 
@@ -49,9 +53,13 @@ var AddMatchForm = React.createClass({displayName: "AddMatchForm",
 		return {};
 	},
 
+	addMatch: function (e) {
+		e.preventDefault();
+	},
+
 	render: function () {
 		return (
-			React.createElement("form", {className: "form-horizontal"}, 
+			React.createElement("form", {className: "form-horizontal", onSubmit: this.addMatch}, 
 				React.createElement("div", {className: "form-group"}, 
 					React.createElement("label", {htmlFor: "player1", className: "control-label col-xs-3"}, "Player 1"), 
 					React.createElement("div", {className: "col-xs-9"}, 
@@ -63,7 +71,8 @@ var AddMatchForm = React.createClass({displayName: "AddMatchForm",
 					React.createElement("div", {className: "col-xs-9"}, 
 						React.createElement("input", {type: "text", name: "player2", id: "player2", className: "form-control"})
 					)
-				)
+				), 
+				React.createElement("button", {type: "submit", className: "btn btn-primary pull-right"}, "Submit")
 			)
 		);
 	}
