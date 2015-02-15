@@ -7,15 +7,18 @@ module.exports = {
 
     name: 'playerDAO',
 
-    getPlayerById: function (player_key) {
+    getPlayerById: function (playerKey) {
+        console.log("PROMISE playerDAO.getPlayerById " + playerKey);
         return new Promise(function (resolve, reject) {
             db.query('SELECT * FROM ping_pong.players WHERE player_key = $1::bigint',
-                [player_key], function (err, result) {
+                [playerKey], function (err, result) {
 
                     if (err) {
+                        console.log("REJECT  playerDAO.getPlayerById " + err);
                         reject(err);
                     }
 
+                    console.log("RESOLVE  playerDAO.getPlayerById " + JSON.stringify(result.rows[0]));
                     resolve(result.rows[0]);
 
                     // {
@@ -31,6 +34,7 @@ module.exports = {
     },
 
     getPlayerByAny: function (criteria, params) {
+        console.log("PROMISE playerDAO.getPlayerByAny " + JSON.stringify(criteria) + " " + JSON.stringify(params));
 
         if (criteria.length != params.length) {
             console.log('Error in PlayerDAO.getPlayerByAny: criteria length must match params length');
@@ -51,15 +55,17 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             db.query(query, params, function (err, result) {
                 if (err) {
+                    console.log("REJECT  playerDAO.getPlayerByAny " + err);
                     reject(err);
                 }
+                console.log("RESOLVE  playerDAO.getPlayerByAny " + JSON.stringify(result.rows[0]));
                 resolve(result.rows[0]);
             });
         });
     },
 
     searchPlayers: function (query) {
-        //TODO: NOT WORKING
+        console.log("PROMISE playerDAO.searchPlayers " + query);
         return new Promise(function (resolve, reject) {
 
             var queryStr = 'SELECT' +
@@ -72,42 +78,47 @@ module.exports = {
                 '   OR hipchat_name ILIKE \'%$1::text%\'' +
                 '   OR email_address ILIKE \'%$1::text%\'';
 
-            console.log(queryStr);
-            console.log(query);
+            //console.log(queryStr);
 
             db.query(queryStr, [query], function (err, result) {
-                console.log(err);
-                console.log(result);
                 if (err) {
+                    console.log("REJECT  playerDAO.searchPlayers " + err);
                     reject(err);
                 }
+                console.log("RESOLVE  playerDAO.searchPlayers " + JSON.stringify(result.rows));
                 resolve(result.rows);
             });
         });
     },
 
     addPlayer: function (player) {
+        console.log("PROMISE playerDAO.addPlayer " + JSON.stringify(player));
         return new Promise(function (resolve, reject) {
             db.query('INSERT INTO ping_pong.players (name, hipchat_name, email_address, skill_level, tagline)' +
                 ' VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) RETURNING player_key;',
                 [player.name, player.hipchat_name, player.email_address, player.skill_level, player.tagline], function (err, result) {
                     if (err) {
+                        console.log("REJECT  playerDAO.addPlayer " + err);
                         reject(err);
                     }
+                    console.log("RESOLVE  playerDAO.addPlayer " + result.rows[0].player_key);
                     resolve(result.rows[0].player_key);
                 });
         });
     },
 
     updatePlayer: function (player) {
+        console.log("PROMISE playerDAO.updatePlayer " + JSON.stringify(player));
         return new Promise(function (resolve, reject) {
             db.query('UPDATE ping_pong.players (name, hipchat_name, email_address, skill_level, tagline)' +
-                ' VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) WHERE player_key = $1::bigint;',
+                ' VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) WHERE player_key = $1::bigint; RETURNING *',
                 [player.name, player.hipchat_name, player.email_address, player.skill_level, player.tagline], function (err, result) {
                     if (err) {
+                        console.log("REJECT  playerDAO.updatePlayer " + err);
                         reject(err);
                     }
-                    resolve(result.rows[0].player_key);
+                    console.log("RESOLVE  playerDAO.updatePlayer " + JSON.stringify(result.rows[0]));
+                    resolve(result.rows[0]);
                 });
         });
     },

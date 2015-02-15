@@ -26,38 +26,41 @@ app.use(bodyParser.json()); // to support JSON-encoded bodies
 //app.use(express.json()); // to support JSON-encoded bodies
 
 var playerService = require('../services/PlayerService');
-app.get('/player', playerService.getPlayerById);
-app.get('/player/by-any', playerService.getPlayerByAny);
-app.get('/player/search', playerService.searchPlayers);
-app.post('/player', playerService.addPlayer);
-app.put('/player', playerService.updatePlayer);
+app.get    ('/player', playerService.getPlayerById);
+app.post   ('/player', playerService.addPlayer);
+app.put    ('/player', playerService.updatePlayer);
+app.get    ('/player/by-any', playerService.getPlayerByAny);
+app.get    ('/player/search', playerService.searchPlayers);
+app.post   ('/player/resolve-players', playerService.resolvePlayers);
 
 var matchService = require('../services/MatchService');
-app.get('/match', matchService.getMatchById);
-app.post('/match', matchService.addMatch);
-app.get('/match/players', matchService.getMatchPlayers);
-app.post('/match/player', matchService.addMatchPlayer);
+app.get    ('/match', matchService.getMatchById);
+app.post   ('/match', matchService.addMatch);
 
 var matchQueueService = require('../services/MatchQueueService');
-app.get('/matchQueue', matchQueueService.getMatchQueueById);
-app.post('/matchQueue', matchQueueService.addMatchToQueue);
+app.get    ('/match-queue', matchQueueService.getMatchQueueById);
+app.post   ('/match-queue', matchQueueService.addMatchToQueue);
 
 var challengeService = require('../services/ChallengeService');
-app.get('/challenge', challengeService.getChallengeById);
-app.post('/challenge', challengeService.addChallenge);
-app.get('/challenge/accept', challengeService.acceptChallenge);
-app.get('/challenge/reject', challengeService.rejectChallenge);
-app.get('/challenge/cancel', challengeService.cancelChallenge);
+app.get    ('/challenge', challengeService.getChallengeById);
+app.post   ('/challenge', challengeService.addChallenge);
+app.get    ('/challenge/accept', challengeService.acceptChallenge);
+app.get    ('/challenge/reject', challengeService.rejectChallenge);
+app.get    ('/challenge/cancel', challengeService.cancelChallenge);
 
 var outcomeService = require('../services/OutcomeService');
-app.get('/outcome', outcomeService.getOutcomeById);
-app.post('/outcome', outcomeService.addOutcome);
+app.get    ('/outcome', outcomeService.getOutcomeById);
+app.post   ('/outcome', outcomeService.addOutcome);
 
 var singlePlayerService = require('../services/SinglePlayerService');
-app.get('/single-player', singlePlayerService.getSinglePlayerById);
-app.get('/single-players', singlePlayerService.getSinglePlayers);
-app.post('/single-player', singlePlayerService.addSinglePlayer);
-app.delete('/single-player', singlePlayerService.removeSinglePlayer);
+app.get    ('/single-player', singlePlayerService.getSinglePlayerById);
+app.get    ('/single-players', singlePlayerService.getSinglePlayers);
+app.post   ('/single-player', singlePlayerService.addSinglePlayer);
+app.delete ('/single-player', singlePlayerService.removeSinglePlayer);
+
+var exampleService = require('../services/ExampleService');
+app.get    ('/example/chain', exampleService.chain);
+app.get    ('/example/accumulate', exampleService.accumulate);
 
 app.use(express.static(path.join(serverDir, '..', 'www')));
 
@@ -70,5 +73,5 @@ var server = app.listen(9394, function() {
 	var port = server.address().port;
 
 	process.stdout.write(
-		['Ping Pong Queue available at http://', host, ':', port].join(''));
+		['Ping Pong Queue available at http://', host, ':', port].join('') + '\n\n');
 });
