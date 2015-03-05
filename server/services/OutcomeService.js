@@ -1,26 +1,32 @@
 'use strict';
 
-var outcomeDAO = require('../daos/OutcomeDAO');
+var outcomeResource = require('../resources/OutcomeResource');
 
 module.exports = {
 
     name: 'outcomeService',
 
     getOutcomeById: function (request, response) {
-        var promise = outcomeDAO.getOutcomeById(request.query.outcome_key);
-        promise.then(function (outcome) {
-            response.send(outcome);
-        }, function (err) {
-            console.error('Error in getOutcomeById: ', err);
-        });
+        console.log('REQUEST outcomeService.getOutcomeById');
+        outcomeResource.getOutcomeById(request.query.outcome_key)
+            .then(function (outcome) {
+                console.log('RESPONSE outcomeService.getOutcomeById ' + outcome);
+                response.send(outcome);
+            }, function (err) {
+                console.error('ERROR in outcomeService.getOutcomeById: ', err);
+                response.send(err);
+            });
     },
 
     addOutcome: function (request, response) {
-        var promise = outcomeDAO.createOutcome(request.body);
-        promise.then(function (outcomeId) {
-            response.send(outcomeId);
-        }, function (err) {
-            console.error('Error in addOutcome: ', err);
-        });
+        console.log('REQUEST outcomeService.addOutcome');
+        outcomeResource.createOutcome(request.body)
+            .then(function (outcomeId) {
+                console.log('REQUEST outcomeService.addOutcome ' + outcomeId);
+                response.send(outcomeId);
+            }, function (err) {
+                console.error('ERROR in outcomeService.addOutcome: ', err);
+                response.send(err);
+            });
     }
 };

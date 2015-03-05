@@ -1,53 +1,63 @@
 'use strict';
 
-var challengeDAO = require('../daos/ChallengeDAO');
+var challengeResource = require('../resources/ChallengeResource');
 
 module.exports = {
 
     name: 'challengeService',
 
     getChallengeById: function (request, response) {
-        var promise = challengeDAO.getChallengeById(request.query.challenge_key);
-        promise.then(function (challenge) {
-            response.send(challenge);
-        }, function (err) {
-            console.error('Error in getChallengeById: ', err);
-        });
+        console.log('challengeService.getChallengeById');
+        challengeResource.getChallengeById(request.query.challenge_key)
+            .then(function (challenge) {
+                response.send(challenge);
+            }, function (err) {
+                console.error('Error in getChallengeById: ', err);
+                response.send(err);
+            });
     },
 
     addChallenge: function (request, response) {
-        var promise = challengeDAO.createChallenge(request.body);
-        promise.then(function (challengeId) {
-            response.send(challengeId);
-        }, function (err) {
-            console.error('Error in addChallenge: ', err);
-        });
+        console.log('challengeService.addChallenge');
+        challengeResource.createChallenge(request.body)
+            .then(function (challengeId) {
+                response.send(challengeId);
+            }, function (err) {
+                console.error('Error in addChallenge: ', err);
+                response.send(err);
+            });
     },
 
     acceptChallenge: function (request, response) {
-        var promise = challengeDAO.acceptChallenge(request.query.challenge_key);
-        promise.then(function (result) {
-            response.sendStatus(200);
-        }, function (err) {
-            console.error('Error in acceptChallenge: ', err);
-        });
+        console.log('challengeService.acceptChallenge');
+        challengeResource.acceptChallenge(request.query.challenge_key)
+            .then(function (result) {
+                response.sendStatus(200);
+            }, function (err) {
+                console.error('Error in acceptChallenge: ', err);
+                response.send(err);
+            });
     },
 
     rejectChallenge: function (request, response) {
-        var promise = challengeDAO.rejectChallenge(request.query.challenge_key);
-        promise.then(function (result) {
-            response.sendStatus(200);
-        }, function (err) {
-            console.error('Error in rejectChallenge: ', err);
-        });
+        console.log('challengeService.rejectChallenge');
+        challengeResource.rejectChallenge(request.query.challenge_key)
+            .then(function (result) {
+                response.sendStatus(200);
+            }, function (err) {
+                console.error('Error in rejectChallenge: ', err);
+                response.send(err);
+            });
     },
 
     cancelChallenge: function (request, response) {
-        var promise = challengeDAO.cancelChallenge(request.query.challenge_key);
-        promise.then(function (result) {
-            response.sendStatus(200);
-        }, function (err) {
-            console.error('Error in cancelChallenge: ', err);
-        });
+        console.log('challengeService.cancelChallenge');
+        challengeResource.cancelChallenge(request.query.challenge_key)
+            .then(function (result) {
+                response.sendStatus(200);
+            }, function (err) {
+                console.error('Error in cancelChallenge: ', err);
+                response.send(err);
+            });
     }
 };

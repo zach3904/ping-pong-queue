@@ -14,6 +14,7 @@ module.exports = {
 
                     if (err) {
                         reject(err);
+                        return;
                     }
 
                     resolve(result.rows[0]);
@@ -46,6 +47,7 @@ module.exports = {
                 [match_key], function (err, result) {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     resolve(result.rows[0].match_queue_key);
                 });

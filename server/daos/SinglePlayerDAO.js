@@ -14,6 +14,7 @@ module.exports = {
 
                     if (err) {
                         reject(err);
+                        return;
                     }
 
                     resolve(result.rows[0]);
@@ -35,6 +36,7 @@ module.exports = {
                 [], function (err, result) {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     resolve(result.rows);
                 });
@@ -47,6 +49,7 @@ module.exports = {
                 [player_key, match_type, skill_level], function (err, result) {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     resolve(result.rows[0].single_player_key);
                 });
@@ -59,6 +62,7 @@ module.exports = {
                 [single_player_key], function (err, result) {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     resolve();
                 });
