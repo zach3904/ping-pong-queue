@@ -82,7 +82,7 @@ describe('MatchDAO', function () {
     describe('getMatchById', function () {
 
         it('should return a match if a match with the given ID exists', function (done) {
-            matchDAO.getMatchById(1)
+            matchDAO.getMatchById(testData.players[0].player_key)
                 .then(function (match) {
                     try {
                         assert(match != null);
@@ -194,11 +194,11 @@ describe('MatchDAO', function () {
     describe('getMatchPlayers', function () {
 
         it('should return all players linked to the given match, split into multiple arrays by team', function (done) {
-
+            done(new Error('NOT IMPLEMENTED'));
         });
 
         it('should return an empty object if no players are linked to the given match', function (done) {
-
+            done(new Error('NOT IMPLEMENTED'));
         });
 
         it('should return an error if the given ID is null', function (done) {
@@ -235,7 +235,7 @@ describe('MatchDAO', function () {
     describe('createMatchPlayer', function () {
 
         it('should link the given player to the given match with the given team', function (done) {
-            matchDAO.createMatchPlayer(1, 1, 'CHALLENGER')
+            matchDAO.createMatchPlayer(testData.matches[0].match_key, testData.players[0].player_key, 'CHALLENGER')
                 .then(function (matchPlayerKey) {
                     try {
                         assert(matchPlayerKey != null);
@@ -251,7 +251,7 @@ describe('MatchDAO', function () {
         });
 
         it('should return an error if the given matchKey does not exist', function (done) {
-            matchDAO.createMatchPlayer(2000000000, 1, 'CHALLENGER')
+            matchDAO.createMatchPlayer(2000000000, testData.players[0].player_key, 'CHALLENGER')
                 .then(function (matchPlayerKey) {
                     done(new Error("Failed to fail " + matchPlayerKey));
                 }, function (err) {
@@ -266,7 +266,7 @@ describe('MatchDAO', function () {
         });
 
         it('should return an error if the given playerKey does not exist', function (done) {
-            matchDAO.createMatchPlayer(1, 2000000000, 'CHALLENGER')
+            matchDAO.createMatchPlayer(testData.matches[0].match_key, 2000000000, 'CHALLENGER')
                 .then(function (matchPlayer) {
                     done(new Error("Failed to fail " + matchPlayer));
                 }, function (err) {
@@ -280,8 +280,9 @@ describe('MatchDAO', function () {
                 });
         });
 
-        it('should return an error if the given match already has the max allowed players for it\'s match_type');
-
+        it('should return an error if the given match already has the max allowed players for it\'s match_type', function (done) {
+            done(new Error('NOT IMPLEMENTED'));
+        });
 
     });
 });

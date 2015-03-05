@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('underscore');
 var Promise = require('promise');
 var db = require('../db.js');
 
@@ -40,14 +41,12 @@ module.exports = {
     },
 
     createMatch: function (matchType) {
-        console.log("##########");
         if (matchType == null) {
             var err = 'Required match_type may not be null';
             console.log('FAIL    matchDAO.createMatch ' + err);
             return Promise.reject(err);
         }
-        console.log("!!!!!!!! "+JSON.stringify(matchType));
-        if (!validMatchTypes.contains(matchType)) {
+        if (_.intersection(validMatchTypes, matchType).length == -1) {
             var err = 'Invalid match_type ' + matchType;
             console.log('FAIL    matchDAO.createMatch ' + err);
             return Promise.reject(err);
