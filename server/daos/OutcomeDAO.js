@@ -14,6 +14,7 @@ module.exports = {
 
                     if (err) {
                         reject(err);
+                        return;
                     }
 
                     resolve(result.rows[0]);
@@ -37,6 +38,7 @@ module.exports = {
                 [match_key, winning_team, winning_score, losing_score], function (err, result) {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     resolve(result.rows[0].outcome_key);
                 });

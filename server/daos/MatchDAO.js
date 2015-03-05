@@ -1,13 +1,26 @@
 'use strict';
 
+var _ = require('underscore');
 var Promise = require('promise');
 var db = require('../db.js');
+
+// This needs to move ... somewhere sharable
+// Maybe read from db on app start?
+var validMatchTypes = ['SINGLES', 'DOUBLES', 'ROUNDROBIN'];
 
 module.exports = {
 
     name: 'matchDAO',
 
     getMatchById: function (matchKey) {
+        if (matchKey == null) {
+            var err = 'Required match_key may not be null';
+            console.log('FAIL    matchDAO.getMatchById ' + err);
+            return Promise.reject(err);
+        }
+        if (isNaN(matchKey) || matchKey < 1) {
+            return Promise.reject("Invalid match key " + matchKey);
+        }
         console.log('PROMISE matchDAO.getMatchById ' + matchKey);
         return new Promise(function (resolve, reject) {
             db.query('SELECT * FROM ping_pong.matches m' +
@@ -28,6 +41,16 @@ module.exports = {
     },
 
     createMatch: function (matchType) {
+        if (matchType == null) {
+            var err = 'Required match_type may not be null';
+            console.log('FAIL    matchDAO.createMatch ' + err);
+            return Promise.reject(err);
+        }
+        if (_.intersection(validMatchTypes, matchType).length == -1) {
+            var err = 'Invalid match_type ' + matchType;
+            console.log('FAIL    matchDAO.createMatch ' + err);
+            return Promise.reject(err);
+        }
         console.log('PROMISE matchDAO.createMatch ' + matchType);
         return new Promise(function (resolve, reject) {
             db.query('INSERT INTO ping_pong.matches (match_type) VALUES ($1::match_type) RETURNING match_key;',

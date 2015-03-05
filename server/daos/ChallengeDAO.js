@@ -14,6 +14,7 @@ module.exports = {
 
                     if (err) {
                         reject(err);
+                        return;
                     }
 
                     resolve(result.rows[0]);
@@ -37,6 +38,7 @@ module.exports = {
                 [match_key], function (err, result) {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     resolve(result.rows[0].challenge_key);
                 });
@@ -49,6 +51,7 @@ module.exports = {
                 [challenge_key], function (err, result) {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     resolve();
                 });
@@ -61,6 +64,7 @@ module.exports = {
                 [challenge_key], function (err, result) {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     resolve();
                 });
@@ -73,6 +77,7 @@ module.exports = {
                 [challenge_key], function (err, result) {
                     if (err) {
                         reject(err);
+                        return;
                     }
                     resolve();
                 });

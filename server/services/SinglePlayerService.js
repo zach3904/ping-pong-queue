@@ -1,44 +1,48 @@
 'use strict';
 
-var singlePlayerDAO = require('../daos/SinglePlayerDAO');
+var singlePlayerResource = require('../resources/SinglePlayerResource');
 
 module.exports = {
 
     name: 'singlePlayerService',
 
     getSinglePlayers: function (request, response) {
-        var promise = singlePlayerDAO.getSinglePlayers();
-        promise.then(function (singlePlayers) {
-            response.send(singlePlayers);
-        }, function (err) {
-            console.error('Error in getSinglePlayers: ', err);
-        });
+        console.log('singlePlayerService.getSinglePlayers');
+        singlePlayerResource.getSinglePlayers()
+            .then(function (singlePlayers) {
+                response.send(singlePlayers);
+            }, function (err) {
+                console.error('Error in getSinglePlayers: ', err);
+            });
     },
 
     getSinglePlayerById: function (request, response) {
-        var promise = singlePlayerDAO.getSinglePlayerById(request.query.single_player_id);
-        promise.then(function (singlePlayerById) {
-            response.send(singlePlayerById);
-        }, function (err) {
-            console.error('Error in getSinglePlayerById: ', err);
-        });
+        console.log('singlePlayerService.getSinglePlayerById');
+        singlePlayerResource.getSinglePlayerById(request.query.single_player_id)
+            .then(function (singlePlayerById) {
+                response.send(singlePlayerById);
+            }, function (err) {
+                console.error('Error in getSinglePlayerById: ', err);
+            });
     },
 
     addSinglePlayer: function (request, response) {
-        var promise = singlePlayerDAO.addSinglePlayer(request.query);
-        promise.then(function (singlePlayerId) {
-            response.send(singlePlayerId);
-        }, function (err) {
-            console.error('Error in addSinglePlayer: ', err);
-        });
+        console.log('singlePlayerService.addSinglePlayer');
+        singlePlayerResource.addSinglePlayer(request.query)
+            .then(function (singlePlayerId) {
+                response.send(singlePlayerId);
+            }, function (err) {
+                console.error('Error in addSinglePlayer: ', err);
+            });
     },
 
     removeSinglePlayer: function (request, response) {
-        var promise = singlePlayerDAO.removeSinglePlayer(request.query.single_player_id);
-        promise.then(function (result) {
-            response.sendStatus(200);
-        }, function (err) {
-            console.error('Error in removeSinglePlayer: ', err);
-        });
+        console.log('singlePlayerService.removeSinglePlayer');
+        singlePlayerResource.removeSinglePlayer(request.query.single_player_id)
+            .then(function () {
+                response.sendStatus(200);
+            }, function (err) {
+                console.error('Error in removeSinglePlayer: ', err);
+            });
     }
 };

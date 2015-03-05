@@ -68,6 +68,9 @@ app.use(function(req, res, next) {
   res.send('404');
 });
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+console.log("ENV " + process.env.NODE_ENV);
+
 var server = app.listen(9394, function() {
 	var host = server.address().address;
 	var port = server.address().port;
