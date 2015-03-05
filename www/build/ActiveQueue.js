@@ -1,15 +1,90 @@
 import React from 'react/addons';
-import ReactAsync from 'react-async';
+import McFly from 'mcfly';
+import Ajax from '../lib/Ajax';
+import _ from 'underscore';
 
+var mcfly = new McFly();
 var cx = React.addons.classSet;
+
+
+// ActiveQueue Store
+var _queue = {};
+
+var updateMatches = function (matchList) {
+	_queue = matchList;
+};
+
+var ActiveQueueStore = 	mcfly.createStore({
+
+	getMatches: function () {
+		return _queue;
+	}
+
+}, function (payload) {
+
+	switch (payload.actionType) {
+		case 'UPDATE_MATCHES':
+			updateMatches(payload);
+			ActiveQueueStore.emitChange();
+
+			break;
+
+		default:
+			console.warn('action not found');
+			break;
+	}
+
+});
+
+
+// ActiveStore Actions
+var ActiveQueueActions = mcfly.createActions({
+
+	updateMatches: function () {
+		// make api call
+		// simulate response
+		Ajax.post({
+			url: '/match-queue',
+			type: 'GET'
+		}).then(function (data) {
+			return {
+				actionType: 'UPDATE_MATCHES',
+				matchList: data,
+				limit: 5
+			}
+		});
+
+	}
+
+});
 
 var ActiveQueue = React.createClass({displayName: "ActiveQueue",
 
+	mixins: [ActiveQueueStore.mixin],
+
 	getInitialState: function () {
 		return {
-			activeQueue: [],
 			isAddMatchFormOpen: false
 		};
+	},
+
+	getQueueStateFromStore: function () {
+		return {
+			activeQueue: ActiveQueueStore.getMatches()
+		}
+	},
+
+	storeDidChange: function () {
+		console.log('store changed');
+		this.setState(this.getQueueStateFromStore());
+	},
+
+	componentDidMount: function () {
+		// get match list
+		ActiveQueueActions.updateMatches();
+
+		// setup polling for active matches
+		setInterval(ActiveQueueActions.updateMatches, 10000);
 	},
 
 	toggleAddMatchForm: function () {

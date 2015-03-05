@@ -13,9 +13,11 @@ Update your shell to put node_modules/.bin into your path
 
 ## Running Locally
 
-In the command line, navigate to the root folder "ping-pong-queue"
-Run command "node server/bin/ping-pong-queue"
-Go to URL http://127.0.0.1:9394
+In the command line, navigate to the root folder "ping-pong-queue".
+
+Run command "node server/bin/ping-pong-queue".
+
+Go to URL http://127.0.0.1:9394.
 
 ## Code Layout
 

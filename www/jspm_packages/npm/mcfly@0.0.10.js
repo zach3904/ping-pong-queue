@@ -1,0 +1,1 @@
+module.exports = require("npm:mcfly@0.0.10/index");

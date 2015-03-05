@@ -37,7 +37,9 @@
       "baseURL": "www"
     },
     "dependencies": {
+      "mcfly": "npm:mcfly@^0.0.10",
       "react": "^0.12.2",
+      "rsvp": "npm:rsvp@^3.0.17",
       "underscore": "^1.7.0"
     }
   }

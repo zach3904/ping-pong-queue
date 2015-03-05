@@ -1,0 +1,22 @@
+{
+  "name": "invariant",
+  "version": "1.0.2",
+  "description": "invariant",
+  "licence": "BSD",
+  "author": "Andres Suarez <zertosh@gmail.com>",
+  "main": "invariant.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/zertosh/invariant.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^1.21.4"
+  },
+  "engines": {
+    "node": ">=0.10"
+  }
+}

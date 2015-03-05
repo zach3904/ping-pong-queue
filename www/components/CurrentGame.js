@@ -1,5 +1,5 @@
 import React from 'react/addons';
-import AjaxMixin from '../lib/Ajax';
+import mcFly from 'mcfly';
 
 var cx = React.addons.classSet;
 
@@ -80,33 +80,12 @@ var LogGameForm = React.createClass({
 		var val = e.target.value;
 
 		if (val >= this.props.scoreMinVal && val <= this.props.scoreMaxVal || val === '') {
-			this.setState({ scores[e.target.id]: val });
+			this.setState({ scores: val });
 		}
 	},
 
 	submitGame: function (e) {
 		e.preventDefault();
-
-		// this.post({
-		// 	url: '/asdf',
-		// 	data: {
-		// 		score1: {
-		// 			name: this.props.match.player1,
-		// 			score: this.refs.score1.value
-		// 		},
-		// 		score2: {
-		// 			name: this.props.match.player2,
-		// 			score: this.refs.score2.value
-		// 		}
-		// 	}
-		// }, {
-		// 	success: function (e) {
-		// 		console.log(e);
-		// 	},
-		// 	error: function (e) {
-		// 		console.log(e);
-		// 	}
-		// })
 	},
 
 	render: function () {
