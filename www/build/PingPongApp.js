@@ -7,9 +7,7 @@ var PingPongApp = React.createClass({displayName: "PingPongApp",
 
 	render: function () {
 		return (
-			React.createElement("div", null, 
-				React.createElement(MatchList, null)
-			)
+			React.createElement(MatchList, null)
 		);
 	}
 

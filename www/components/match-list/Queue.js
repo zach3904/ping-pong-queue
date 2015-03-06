@@ -1,35 +1,13 @@
 import React from 'react/addons';
-import queueStore from '../../stores/queueStore';
-import queueActions from '../../actions/queueActions';
 
 var cx = React.addons.classSet;
 
-export default React.createClass({
-
-	mixins: [queueStore.mixin],
+var Queue = React.createClass({
 
 	getInitialState: function () {
 		return {
 			isAddMatchFormOpen: false
 		};
-	},
-
-	getQueueStateFromStore: function () {
-		return {
-			activeQueue: queueStore.getMatches()
-		}
-	},
-
-	storeDidChange: function () {
-		this.setState(this.getQueueStateFromStore());
-	},
-
-	componentDidMount: function () {
-		// get match list
-		queueActions.updateMatches();
-
-		// setup polling for active matches
-		//setInterval(queueActions.updateMatches, 10000);
 	},
 
 	toggleAddMatchForm: function () {
@@ -49,17 +27,16 @@ export default React.createClass({
 					<div className="panel-body">
 						<h5>New Match</h5>
 
-						<AddMatchForm/>
+						<AddMatchForm />
 					</div>
 				</div>
 				
 				<ul className="activeQueueList list-unstyled">
-					<hr/>
-					<li><ActiveQueueItem/></li>
-					<hr/>
-					<li><ActiveQueueItem/></li>
-					<hr/>
-					<li><ActiveQueueItem/></li>
+					{this.props.matches.map(function (match, i) {
+						return (
+							<QueueItem match={match} />
+						);
+					})}
 				</ul>
 			</div>
 		);
@@ -68,10 +45,6 @@ export default React.createClass({
 });
 
 var AddMatchForm = React.createClass({
-
-	getDefaultProps: function () {
-		return {};
-	},
 
 	addMatch: function (e) {
 		e.preventDefault();
@@ -99,30 +72,36 @@ var AddMatchForm = React.createClass({
 
 });
 
-var ActiveQueueItem = React.createClass({
+var QueueItem = React.createClass({
 
 	getDefaultProps: function () {
 		return {
-			item: {}
+			match: {}
 		};
 	},
 
 	render: function () {
+		console.log(this.props.match);
+
 		return (
-			<div className="row">
-				<div className="col-xs-9">
-					<p><strong>Sekou R. (12-2)</strong></p>
-					<div>vs.</div>
-					<p><strong>Jake W. (15-3)</strong></p>
-				</div>
-				<div className="col-xs-3">
-					<div className="btn-group-vertical pull-right">
-						<button type="button" className="btn btn-sm btn-default">Delay</button>
-						<button type="button" className="btn btn-sm btn-danger">Cancel</button>
+			<li>
+				<div className="row">
+					<div className="col-xs-9">
+						<p><strong>Sekou R. (12-2)</strong></p>
+						<div>vs.</div>
+						<p><strong>Jake W. (15-3)</strong></p>
+					</div>
+					<div className="col-xs-3">
+						<div className="btn-group-vertical pull-right">
+							<button type="button" className="btn btn-sm btn-default">Delay</button>
+							<button type="button" className="btn btn-sm btn-danger">Cancel</button>
+						</div>
 					</div>
 				</div>
-			</div>
+			</li>
 		);
 	}
 
 });
+
+export default Queue;

@@ -1,12 +1,39 @@
 'use strict';
 
 import React from 'react/addons';
+import _ from 'underscore';
+import matchListStore from '../../stores/MatchListStore';
+import matchListActions from '../../actions/MatchListActions';
 
 // components
 import CurrentGame from './CurrentGame';
 import Queue from './Queue';
 
-export default React.createClass({
+var MatchList = React.createClass({
+
+	mixins: [matchListStore.mixin],
+
+	getInitialState: function () {
+		return this.getMatchListFromStore();
+	},
+
+	getMatchListFromStore: function () {
+		return {
+			matchList: matchListStore.getMatches()
+		};
+	},
+
+	storeDidChange: function () {
+		this.setState(this.getMatchListFromStore());
+	},
+
+	componentDidMount: function () {
+		// get match list
+		matchListActions.updateMatches();
+
+		// setup polling for active matches
+		setInterval(matchListActions.updateMatches, 10000);
+	},
 
 	render: function () {
 		return (
@@ -16,7 +43,7 @@ export default React.createClass({
 						<h5>Current Game</h5>
 						<hr/>
 						<div className="content">
-							<CurrentGame />
+							<CurrentGame match={_.first(this.state.matchList)} />
 						</div>
 					</div>
 				</section>
@@ -26,7 +53,7 @@ export default React.createClass({
 						<h5>Active Queue</h5>
 						<hr/>
 						<div className="content">
-							<Queue />
+							<Queue matches={_.rest(this.state.matchList)} />
 						</div>
 					</div>
 				</section>
@@ -35,3 +62,5 @@ export default React.createClass({
 	}
 
 });
+
+export default MatchList;

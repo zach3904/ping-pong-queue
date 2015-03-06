@@ -7,9 +7,7 @@ var PingPongApp = React.createClass({
 
 	render: function () {
 		return (
-			<div>
-				<MatchList />
-			</div>
+			<MatchList />
 		);
 	}
 

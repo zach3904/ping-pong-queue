@@ -1,35 +1,13 @@
 import React from 'react/addons';
-import queueStore from '../../stores/queueStore';
-import queueActions from '../../actions/queueActions';
 
 var cx = React.addons.classSet;
 
-export default React.createClass({
-
-	mixins: [queueStore.mixin],
+var Queue = React.createClass({displayName: "Queue",
 
 	getInitialState: function () {
 		return {
 			isAddMatchFormOpen: false
 		};
-	},
-
-	getQueueStateFromStore: function () {
-		return {
-			activeQueue: queueStore.getMatches()
-		}
-	},
-
-	storeDidChange: function () {
-		this.setState(this.getQueueStateFromStore());
-	},
-
-	componentDidMount: function () {
-		// get match list
-		queueActions.updateMatches();
-
-		// setup polling for active matches
-		//setInterval(queueActions.updateMatches, 10000);
 	},
 
 	toggleAddMatchForm: function () {
@@ -54,12 +32,11 @@ export default React.createClass({
 				), 
 				
 				React.createElement("ul", {className: "activeQueueList list-unstyled"}, 
-					React.createElement("hr", null), 
-					React.createElement("li", null, React.createElement(ActiveQueueItem, null)), 
-					React.createElement("hr", null), 
-					React.createElement("li", null, React.createElement(ActiveQueueItem, null)), 
-					React.createElement("hr", null), 
-					React.createElement("li", null, React.createElement(ActiveQueueItem, null))
+					this.props.matches.map(function (match, i) {
+						return (
+							React.createElement(QueueItem, {match: match})
+						);
+					})
 				)
 			)
 		);
@@ -68,10 +45,6 @@ export default React.createClass({
 });
 
 var AddMatchForm = React.createClass({displayName: "AddMatchForm",
-
-	getDefaultProps: function () {
-		return {};
-	},
 
 	addMatch: function (e) {
 		e.preventDefault();
@@ -99,26 +72,30 @@ var AddMatchForm = React.createClass({displayName: "AddMatchForm",
 
 });
 
-var ActiveQueueItem = React.createClass({displayName: "ActiveQueueItem",
+var QueueItem = React.createClass({displayName: "QueueItem",
 
 	getDefaultProps: function () {
 		return {
-			item: {}
+			match: {}
 		};
 	},
 
 	render: function () {
+		console.log(this.props.match);
+
 		return (
-			React.createElement("div", {className: "row"}, 
-				React.createElement("div", {className: "col-xs-9"}, 
-					React.createElement("p", null, React.createElement("strong", null, "Sekou R. (12-2)")), 
-					React.createElement("div", null, "vs."), 
-					React.createElement("p", null, React.createElement("strong", null, "Jake W. (15-3)"))
-				), 
-				React.createElement("div", {className: "col-xs-3"}, 
-					React.createElement("div", {className: "btn-group-vertical pull-right"}, 
-						React.createElement("button", {type: "button", className: "btn btn-sm btn-default"}, "Delay"), 
-						React.createElement("button", {type: "button", className: "btn btn-sm btn-danger"}, "Cancel")
+			React.createElement("li", null, 
+				React.createElement("div", {className: "row"}, 
+					React.createElement("div", {className: "col-xs-9"}, 
+						React.createElement("p", null, React.createElement("strong", null, "Sekou R. (12-2)")), 
+						React.createElement("div", null, "vs."), 
+						React.createElement("p", null, React.createElement("strong", null, "Jake W. (15-3)"))
+					), 
+					React.createElement("div", {className: "col-xs-3"}, 
+						React.createElement("div", {className: "btn-group-vertical pull-right"}, 
+							React.createElement("button", {type: "button", className: "btn btn-sm btn-default"}, "Delay"), 
+							React.createElement("button", {type: "button", className: "btn btn-sm btn-danger"}, "Cancel")
+						)
 					)
 				)
 			)
@@ -126,3 +103,5 @@ var ActiveQueueItem = React.createClass({displayName: "ActiveQueueItem",
 	}
 
 });
+
+export default Queue;

@@ -1,13 +1,13 @@
 import Flux from '../app/flux';
 
 // ActiveQueue Store
-var _queue = {};
+var _queue = [];
 
 var updateMatches = function (matchList) {
 	_queue = matchList;
 };
 
-var ActiveQueueStore = Flux.createStore({
+var MatchListStore = Flux.createStore({
 
 	getMatches: function () {
 		return _queue;
@@ -18,7 +18,7 @@ var ActiveQueueStore = Flux.createStore({
 	switch (payload.actionType) {
 		case 'UPDATE_MATCHES':
 			updateMatches(payload);
-			ActiveQueueStore.emitChange();
+			MatchListStore.emitChange();
 
 			break;
 
@@ -29,4 +29,4 @@ var ActiveQueueStore = Flux.createStore({
 
 });
 
-export default ActiveQueueStore;
+export default MatchListStore;

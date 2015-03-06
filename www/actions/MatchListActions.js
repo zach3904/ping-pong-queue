@@ -2,7 +2,7 @@ import Flux from '../app/flux';
 import Ajax from '../lib/Ajax';
 
 // ActiveStore Actions
-var QueueActions = Flux.createActions({
+var MatchListActions = Flux.createActions({
 
 	updateMatches: function () {
 		// make api call
@@ -22,4 +22,4 @@ var QueueActions = Flux.createActions({
 
 });
 
-export default QueueActions;
+export default MatchListActions;
