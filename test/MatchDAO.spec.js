@@ -40,38 +40,36 @@ describe('MatchDAO', function () {
     beforeEach(function (done) {
         console.log('********************************************************************************');
         console.log('BEGIN TEST SETUP');
-        testSetup.clearAll().then(
-            function (result) {
-                testSetup.setupPlayers(testData.players).then(
-                    function (results) {
-                        console.log('ADDED PLAYERS: ' + results);
-                        for (var i = 0; i < results.length; i++) {
-                            testData.players[i].player_key = results[i];
-                        }
-                        testSetup.setupMatches(testData.matches).then(
-                            function (results) {
-                                console.log('ADDED MATCHES: ' + results);
-                                for (var i = 0; i < results.length; i++) {
-                                    testData.matches[i].match_key = results[i];
-                                }
-                                console.log('TEST SETUP COMPLETE');
-                                console.log('********************************************************************************');
-                                done();
-                            },
-                            function (err) {
-                                var errMsg = 'TEST SETUP FAILED: ' + err;
-                                console.log(errMsg);
-                                console.log('********************************************************************************');
-                                done(errMsg);
-                            });
-                    },
-                    function (err) {
-                        var errMsg = 'TEST SETUP FAILED: ' + err;
-                        console.log(errMsg);
-                        console.log('********************************************************************************');
-                        done(errMsg);
-                    });
+        testSetup.clearAll()
+            .then(function (result) {
+                return testSetup.setupPlayers(testData.players);
             }, function (err) {
+                var errMsg = 'TEST SETUP FAILED: ' + err;
+                console.log(errMsg);
+                console.log('********************************************************************************');
+                done(errMsg);
+            }).then(function (results) {
+                console.log('ADDED PLAYERS: ' + results);
+                for (var i = 0; i < results.length; i++) {
+                    testData.players[i].player_key = results[i];
+                }
+                return testSetup.setupMatches(testData.matches);
+            },
+            function (err) {
+                var errMsg = 'TEST SETUP FAILED: ' + err;
+                console.log(errMsg);
+                console.log('********************************************************************************');
+                done(errMsg);
+            }).then(function (results) {
+                console.log('ADDED MATCHES: ' + results);
+                for (var i = 0; i < results.length; i++) {
+                    testData.matches[i].match_key = results[i];
+                }
+                console.log('TEST SETUP COMPLETE');
+                console.log('********************************************************************************');
+                done();
+            },
+            function (err) {
                 var errMsg = 'TEST SETUP FAILED: ' + err;
                 console.log(errMsg);
                 console.log('********************************************************************************');

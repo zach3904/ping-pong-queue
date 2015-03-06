@@ -27,29 +27,29 @@ describe('PlayerDAO', function () {
     beforeEach(function (done) {
         console.log('********************************************************************************');
         console.log('BEGIN TEST SETUP');
-        testSetup.clearAll().then(
-            function (result) {
-                testSetup.setupPlayers(testData.players).then(
-                    function (results) {
-                        console.log('ADDED PLAYERS: ' + results);
-                        for (var i = 0; i < results.length; i++) {
-                            testData.players[i].player_key = results[i];
-                        }
-                        console.log('TEST SETUP COMPLETE');
-                        console.log('********************************************************************************');
-                        done();
-                    },
-                    function (err) {
-                        var errMsg = 'TEST SETUP FAILED: ' + err;
-                        console.log(errMsg);
-                        console.log('********************************************************************************');
-                        done(errMsg);
-                    });
+        testSetup.clearAll()
+            .then(function (result) {
+                return testSetup.setupPlayers(testData.players);
             }, function (err) {
                 var errMsg = 'TEST SETUP FAILED: ' + err;
                 console.log(errMsg);
                 console.log('********************************************************************************');
-                done(errMsg);
+                done(new Error(errMsg));
+            })
+            .then(function (results) {
+                console.log('ADDED PLAYERS: ' + results);
+                for (var i = 0; i < results.length; i++) {
+                    testData.players[i].player_key = results[i];
+                }
+                console.log('TEST SETUP COMPLETE');
+                console.log('********************************************************************************');
+                done();
+            },
+            function (err) {
+                var errMsg = 'TEST SETUP FAILED: ' + err;
+                console.log(errMsg);
+                console.log('********************************************************************************');
+                done(new Error(errMsg));
             });
     });
 
