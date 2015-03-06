@@ -1,9 +1,8 @@
 import React from 'react/addons';
-import mcFly from 'mcfly';
 
 var cx = React.addons.classSet;
 
-var CurrentGame = React.createClass({
+export default React.createClass({
 
 	getInitialState: function () {
 		return {
@@ -123,5 +122,3 @@ var LogGameForm = React.createClass({
 	}
 
 });
-
-React.render(<CurrentGame/>, document.querySelector('#currentGame'));
