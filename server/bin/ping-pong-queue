@@ -38,8 +38,17 @@ app.get    ('/match', matchService.getMatchById);
 app.post   ('/match', matchService.addMatch);
 
 var matchQueueService = require('../services/MatchQueueService');
-app.get    ('/match-queue', matchQueueService.getMatchQueueById);
-app.post   ('/match-queue', matchQueueService.addMatchToQueue);
+app.get    ('/match-queue/', matchQueueService.getQueuedMatchById);
+app.post   ('/match-queue/', matchQueueService.queueMatch);
+app.get    ('/match-queue/next', matchQueueService.getNextMatch);
+app.get    ('/match-queue/pending', matchQueueService.getMatches);
+app.put    ('/match-queue/delay', matchQueueService.delayMatch);
+app.put    ('/match-queue/cancel', matchQueueService.cancelMatch);
+app.get    ('/match-queue/table-state', matchQueueService.getTableState);
+app.put    ('/match-queue/startNext', matchQueueService.startNext);
+app.put    ('/match-queue/finishCurrent', matchQueueService.finishCurrent);
+app.put    ('/match-queue/addTimeToCurrent', matchQueueService.addTimeToCurrent);
+app.put    ('/match-queue/restartCurrent', matchQueueService.restartCurrent);
 
 var challengeService = require('../services/ChallengeService');
 app.get    ('/challenge', challengeService.getChallengeById);

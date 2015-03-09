@@ -42,14 +42,14 @@ module.exports = {
 
     createMatch: function (matchType) {
         if (matchType == null) {
-            var err = 'Required match_type may not be null';
-            console.log('FAIL    matchDAO.createMatch ' + err);
-            return Promise.reject(err);
+            var errMsgNull = 'Required match_type may not be null';
+            console.log('FAIL    matchDAO.createMatch ' + errMsgNull);
+            return Promise.reject(errMsgNull);
         }
         if (_.intersection(validMatchTypes, matchType).length == -1) {
-            var err = 'Invalid match_type ' + matchType;
-            console.log('FAIL    matchDAO.createMatch ' + err);
-            return Promise.reject(err);
+            var errMsgInvalid = 'Invalid match_type ' + matchType;
+            console.log('FAIL    matchDAO.createMatch ' + errMsgInvalid);
+            return Promise.reject(errMsgInvalid);
         }
         console.log('PROMISE matchDAO.createMatch ' + matchType);
         return new Promise(function (resolve, reject) {
@@ -98,6 +98,22 @@ module.exports = {
     },
 
     createMatchPlayer: function (matchKey, playerKey, team) {
+        if (matchKey == null) {
+            var matchKeyNullErr = 'Required match_key may not be null';
+            console.log('FAIL    matchDAO.createMatchPlayer ' + matchKeyNullErr);
+            return Promise.reject(matchKeyNullErr);
+        }
+        if (isNaN(matchKey) || matchKey < 1) {
+            return Promise.reject("Invalid match key " + matchKey);
+        }
+        if (playerKey == null) {
+            var playerKeyNullErr = 'Required player_key may not be null';
+            console.log('FAIL    matchDAO.createMatchPlayer ' + playerKeyNullErr);
+            return Promise.reject(playerKeyNullErr);
+        }
+        if (isNaN(playerKey) || playerKey < 1) {
+            return Promise.reject("Invalid player key " + playerKey);
+        }
         console.log('PROMISE matchDAO.createMatchPlayer ' + matchKey +" " + playerKey + " " + team);
         return new Promise(function (resolve, reject) {
             db.query('INSERT into ping_pong.match_player (match_key, player_key, team) VALUES ($1::bigint, $2::bigint, $3::team) RETURNING match_player_key;',

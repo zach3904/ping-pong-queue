@@ -56,7 +56,7 @@ module.exports = {
     setupQueuedMatches: function (matches) {
         var queuedMatchPromises = [];
         for (var i = 0; i < matches.length; i++) {
-            queuedMatchPromises.push(matchQueueDAO.queueMatch(matches[i]));
+            queuedMatchPromises.push(matchQueueDAO.queueMatch(matches[i].match_key));
         }
         return Promise.all(queuedMatchPromises);
     },

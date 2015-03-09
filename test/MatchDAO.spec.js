@@ -80,7 +80,7 @@ describe('MatchDAO', function () {
     describe('getMatchById', function () {
 
         it('should return a match if a match with the given ID exists', function (done) {
-            matchDAO.getMatchById(testData.players[0].player_key)
+            matchDAO.getMatchById(testData.matches[0].match_key)
                 .then(function (match) {
                     try {
                         assert(match != null);
@@ -278,6 +278,9 @@ describe('MatchDAO', function () {
                 });
         });
 
+        // TODO create addMatchPlayer function in MatchResource
+        // call the resource method from addMatch instead of the dao method
+        // move this test to MatchResourceTest
         it('should return an error if the given match already has the max allowed players for it\'s match_type', function (done) {
             done(new Error('NOT IMPLEMENTED'));
         });

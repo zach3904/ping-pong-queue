@@ -41,7 +41,7 @@ function _getPlayerByAny(player) {
         params.push(player.email_address);
     }
     if (player.skill_level) {
-        criteria.push({column_name: 'skill_level', 'data_type': 'text'});
+        criteria.push({column_name: 'skill_level', 'data_type': 'skill_level'});
         params.push(player.skill_level);
     }
 
