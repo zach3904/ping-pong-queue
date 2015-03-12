@@ -2,49 +2,7 @@ var assert = require("assert");
 var testSetup = require('../test/TestSetup');
 var matchQueueResource = require('../server/resources/MatchQueueResource');
 
-var testData = {
-    players: [
-        {
-            player_key: null,
-            name: 'molsen',
-            hipchat_name: '@molsen',
-            email_address: 'matthewo@porch.com',
-            skill_level: 'INTERMEDIATE',
-            'tagline': 'YeaH BuddY!'
-        }, {
-            player_key: null,
-            name: 'TheZACH (admin)',
-            hipchat_name: '@ZacharyRichards',
-            email_address: 'zachr@porch.com',
-            skill_level: 'PRO STATUS',
-            'tagline': null
-        }
-    ],
-    matches: [
-        {
-            match_key: null,
-            match_type: 'SINGLES'
-        },
-        {
-            match_key: null,
-            match_type: 'DOUBLES'
-        },
-        {
-            match_key: null,
-            match_type: 'ROUNDROBIN'
-        }
-    ],
-    queuedMatches: [
-        //{
-        //    match_queue_key: null,
-        //    match_key: null
-        //    //queued_dtm: null,
-        //    //started_dtm: null,
-        //    //completed_dtm: null,
-        //    //canceled_dtm: null
-        //}
-    ]
-};
+var testData;
 
 describe('MatchQueueResource', function () {
 
@@ -52,69 +10,28 @@ describe('MatchQueueResource', function () {
         console.log('');
         console.log('********************************************************************************');
         console.log('BEGIN TEST SETUP');
-        // TODO
-        // Clear test data between tests
-        // Most of it gets overwritten
-        // The queuedMatches don't because they are appended to an array
-        // Need a uniform way of handling this
-        // Load defaults at the beginning of each test?
-        testData.queuedMatches = [];
+
         testSetup.clearAll()
+            .then(testSetup.setupPlayers, done)
+            .then(testSetup.setupMatches, done)
             .then(function (result) {
-                return testSetup.setupPlayers(testData.players);
-            }, function (err) {
-                var errMsg = 'TEST SETUP FAILED: ' + err;
-                console.error(errMsg);
-                done(new Error(errMsg));
-            }).then(function (results) {
-                console.log('ADDED PLAYERS: ' + results);
-                for (var i = 0; i < results.length; i++) {
-                    testData.players[i].player_key = results[i];
-                }
-                return testSetup.setupMatches(testData.matches);
-            },
-            function (err) {
-                var errMsg = 'TEST SETUP FAILED: ' + err;
-                console.error(errMsg);
-                done(new Error(errMsg));
-            }).then(function (results) {
-                console.log('ADDED MATCHES: ' + results);
-                for (var i = 0; i < results.length; i++) {
-                    testData.matches[i].match_key = results[i];
-                }
-                //console.log('TEST SETUP COMPLETE');
+                testData = result;
                 done();
-            },
-            function (err) {
-                var errMsg = 'TEST SETUP FAILED: ' + err;
-                console.error(errMsg);
-                done(new Error(errMsg));
-            });
+            }, done);
     });
 
     describe('getQueuedMatchById', function () {
 
         beforeEach(function (done) {
-            testSetup.setupQueuedMatches(testData.matches)
-                .then(function (results) {
-                    console.log('MATCH QUEUE IDS: ' + results);
-                    for (var i = 0; i < results.length; i++) {
-                        testData.queuedMatches.push({
-                            match_queue_key: results[i],
-                            match_key: testData.matches[i].match_key
-                        });
-                    }
-                    console.log('TEST SETUP COMPLETE');
+            testSetup.setupQueuedMatches(testData)
+                .then(function (result) {
+                    testData = result;
                     done();
-                },
-                function (err) {
-                    var errMsg = 'TEST SETUP FAILED: ' + err;
-                    console.error(errMsg);
-                    done(new Error(errMsg));
-                });
+                }, done);
         });
 
         it('should return a queued match if one with the given ID exists', function (done) {
+            console.log('********************************************************************************');
             matchQueueResource.getQueuedMatchById(testData.queuedMatches[0].match_queue_key)
                 .then(function (queuedMatch) {
                     try {
@@ -162,23 +79,11 @@ describe('MatchQueueResource', function () {
     describe('getNextMatch', function () {
 
         beforeEach(function (done) {
-            testSetup.setupQueuedMatches(testData.matches)
-                .then(function (results) {
-                    console.log('MATCH QUEUE IDS: ' + results);
-                    for (var i = 0; i < results.length; i++) {
-                        testData.queuedMatches.push({
-                            match_queue_key: results[i],
-                            match_key: testData.matches[i].match_key
-                        });
-                    }
-                    console.log('TEST SETUP COMPLETE');
+            testSetup.setupQueuedMatches(testData)
+                .then(function (result) {
+                    testData = result;
                     done();
-                },
-                function (err) {
-                    var errMsg = 'TEST SETUP FAILED: ' + err;
-                    console.error(errMsg);
-                    done(new Error(errMsg));
-                });
+                }, done);
         });
 
         it('should return the oldest pending (not started or canceled) queued match if one exists', function (done) {
@@ -202,30 +107,35 @@ describe('MatchQueueResource', function () {
 
     describe('getMatches', function () {
         it('should return all matches in a pending state (not started or canceled)', function (done) {
+            console.log('********************************************************************************');
             done(new Error('Test not implemented'));
         });
     });
 
     describe('cancelMatch', function () {
         it('should set the canceled_dtm of the queue record for the given match to now', function (done) {
+            console.log('********************************************************************************');
             done(new Error('Test not implemented'));
         });
     });
 
     describe('delayMatch', function () {
         it('should set the queued_dtm of the queue record for the given match to now', function (done) {
+            console.log('********************************************************************************');
             done(new Error('Test not implemented'));
         });
     });
 
     describe('getTableState', function () {
         it('should return a valid table state with all required properties', function (done) {
+            console.log('********************************************************************************');
             done(new Error('Test not implemented'));
         });
     });
 
     describe('startNext', function () {
         it('should cause the table state to transition from MATCH_PREP to MATCH_IN_PROGRESS', function (done) {
+            console.log('********************************************************************************');
             done(new Error('Test not implemented'));
         });
         // gray box: it('should call TableManager.start
@@ -239,24 +149,28 @@ describe('MatchQueueResource', function () {
 
     describe('finishCurrent', function () {
         it('should cause the table state to transition from MATCH_IN_PROGRESS to IDLE', function (done) {
+            console.log('********************************************************************************');
             done(new Error('Test not implemented'));
         });
     });
 
     describe('addTimeToCurrent', function () {
         it('should add the given duration (ms) to the table timer', function (done) {
+            console.log('********************************************************************************');
             done(new Error('Test not implemented'));
         });
     });
 
     describe('restartCurrent cause the table timer to reset to the DEFAULT_MATCH_TIME', function () {
         it('should ', function (done) {
+            console.log('********************************************************************************');
             done(new Error('Test not implemented'));
         });
     });
 
     describe('cancelCurrent should cause the table state to transition from MATCH_IN_PROGRESS to IDLE', function () {
         it('should ', function (done) {
+            console.log('********************************************************************************');
             done(new Error('Test not implemented'));
         });
     });

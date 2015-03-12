@@ -3,49 +3,7 @@ var Promise = require("promise");
 var testSetup = require('../test/TestSetup');
 var matchQueueDAO = require('../server/daos/MatchQueueDAO');
 
-var testData = {
-    players: [
-        {
-            player_key: null,
-            name: 'molsen',
-            hipchat_name: '@molsen',
-            email_address: 'matthewo@porch.com',
-            skill_level: 'INTERMEDIATE',
-            'tagline': 'YeaH BuddY!'
-        }, {
-            player_key: null,
-            name: 'TheZACH (admin)',
-            hipchat_name: '@ZacharyRichards',
-            email_address: 'zachr@porch.com',
-            skill_level: 'PRO STATUS',
-            'tagline': null
-        }
-    ],
-    matches: [
-        {
-            match_key: null,
-            match_type: 'SINGLES'
-        },
-        {
-            match_key: null,
-            match_type: 'DOUBLES'
-        },
-        {
-            match_key: null,
-            match_type: 'ROUNDROBIN'
-        }
-    ],
-    queuedMatches: [
-        //{
-        //    match_queue_key: null,
-        //    match_key: null
-        //    //queued_dtm: null,
-        //    //started_dtm: null,
-        //    //completed_dtm: null,
-        //    //canceled_dtm: null
-        //}
-    ]
-};
+var testData;
 
 describe('MatchQueueDAO', function () {
 
@@ -53,68 +11,24 @@ describe('MatchQueueDAO', function () {
         console.log('');
         console.log('********************************************************************************');
         console.log('BEGIN TEST SETUP');
-        // TODO
-        // Clear test data between tests
-        // Most of it gets overwritten
-        // The queuedMatches don't because they are appended to an array
-        // Need a uniform way of handling this
-        // Load defaults at the beginning of each test?
-        testData.queuedMatches = [];
+
         testSetup.clearAll()
+            .then(testSetup.setupPlayers, done)
+            .then(testSetup.setupMatches, done)
             .then(function (result) {
-                return testSetup.setupPlayers(testData.players);
-            }, function (err) {
-                var errMsg = 'TEST SETUP FAILED: ' + err;
-                console.error(errMsg);
-                done(new Error(errMsg));
-            }).then(function (results) {
-                console.log('ADDED PLAYERS: ' + results);
-                for (var i = 0; i < results.length; i++) {
-                    testData.players[i].player_key = results[i];
-                }
-                return testSetup.setupMatches(testData.matches);
-            },
-            function (err) {
-                var errMsg = 'TEST SETUP FAILED: ' + err;
-                console.error(errMsg);
-                done(new Error(errMsg));
-            }).then(function (results) {
-                console.log('ADDED MATCHES: ' + results);
-                for (var i = 0; i < results.length; i++) {
-                    testData.matches[i].match_key = results[i];
-                }
-                //console.log('TEST SETUP COMPLETE');
+                testData = result;
                 done();
-            },
-            function (err) {
-                var errMsg = 'TEST SETUP FAILED: ' + err;
-                console.error(errMsg);
-                done(new Error(errMsg));
-            });
+            }, done);
     });
 
     describe('getQueuedMatchById', function () {
 
         beforeEach(function (done) {
-            //console.log('********************************************************************************');
-            //console.log('BEGIN TEST SETUP');
-            testSetup.setupQueuedMatches(testData.matches)
-                .then(function (results) {
-                    console.log('MATCH QUEUE IDS: ' + results);
-                    for (var i = 0; i < results.length; i++) {
-                        testData.queuedMatches.push({
-                            match_queue_key: results[i],
-                            match_key: testData.matches[i].match_key
-                        });
-                    }
-                    console.log('TEST SETUP COMPLETE');
+            testSetup.setupQueuedMatches(testData)
+                .then(function (result) {
+                    testData = result;
                     done();
-                },
-                function (err) {
-                    var errMsg = 'TEST SETUP FAILED: ' + err;
-                    console.error(errMsg);
-                    done(new Error(errMsg));
-                });
+                }, done);
         });
 
         it('should return a match if a queued match if the given ID exists', function (done) {
@@ -237,25 +151,11 @@ describe('MatchQueueDAO', function () {
     describe('getNextMatch', function () {
 
         beforeEach(function (done) {
-            //console.log('********************************************************************************');
-            //console.log('BEGIN TEST SETUP');
-            testSetup.setupQueuedMatches(testData.matches)
-                .then(function (results) {
-                    console.log('MATCH QUEUE IDS: ' + results);
-                    for (var i = 0; i < results.length; i++) {
-                        testData.queuedMatches.push({
-                            match_queue_key: results[i],
-                            match_key: testData.matches[i].match_key
-                        });
-                    }
-                    //console.log('TEST SETUP COMPLETE');
+            testSetup.setupQueuedMatches(testData)
+                .then(function (result) {
+                    testData = result;
                     done();
-                },
-                function (err) {
-                    var errMsg = 'TEST SETUP FAILED: ' + err;
-                    console.error(errMsg);
-                    done(new Error(errMsg));
-                });
+                }, done);
         });
 
         it('should return a match if a pending (not started or canceled) queued match exists', function (done) {
@@ -303,25 +203,11 @@ describe('MatchQueueDAO', function () {
     describe('getMatches', function () {
 
         beforeEach(function (done) {
-            //console.log('********************************************************************************');
-            //console.log('BEGIN TEST SETUP');
-            testSetup.setupQueuedMatches(testData.matches)
-                .then(function (results) {
-                    console.log('MATCH QUEUE IDS: ' + results);
-                    for (var i = 0; i < results.length; i++) {
-                        testData.queuedMatches.push({
-                            match_queue_key: results[i],
-                            match_key: testData.matches[i].match_key
-                        });
-                    }
-                    //console.log('TEST SETUP COMPLETE');
+            testSetup.setupQueuedMatches(testData)
+                .then(function (result) {
+                    testData = result;
                     done();
-                },
-                function (err) {
-                    var errMsg = 'TEST SETUP FAILED: ' + err;
-                    console.error(errMsg);
-                    done(new Error(errMsg));
-                });
+                }, done);
         });
 
         it('should return all queued matches in a pending state (not started or canceled)', function (done) {
@@ -371,25 +257,11 @@ describe('MatchQueueDAO', function () {
     describe('cancelMatch', function () {
 
         beforeEach(function (done) {
-            //console.log('********************************************************************************');
-            //console.log('BEGIN TEST SETUP');
-            testSetup.setupQueuedMatches(testData.matches)
-                .then(function (results) {
-                    console.log('MATCH QUEUE IDS: ' + results);
-                    for (var i = 0; i < results.length; i++) {
-                        testData.queuedMatches.push({
-                            match_queue_key: results[i],
-                            match_key: testData.matches[i].match_key
-                        });
-                    }
-                    //console.log('TEST SETUP COMPLETE');
+            testSetup.setupQueuedMatches(testData)
+                .then(function (result) {
+                    testData = result;
                     done();
-                },
-                function (err) {
-                    var errMsg = 'TEST SETUP FAILED: ' + err;
-                    console.error(errMsg);
-                    done(new Error(errMsg));
-                });
+                }, done);
         });
 
         it('should set the canceled_dtm of the queue record for the given match to now', function (done) {
@@ -469,25 +341,11 @@ describe('MatchQueueDAO', function () {
     describe('delayMatch', function () {
 
         beforeEach(function (done) {
-            //console.log('********************************************************************************');
-            //console.log('BEGIN TEST SETUP');
-            testSetup.setupQueuedMatches(testData.matches)
-                .then(function (results) {
-                    console.log('MATCH QUEUE IDS: ' + results);
-                    for (var i = 0; i < results.length; i++) {
-                        testData.queuedMatches.push({
-                            match_queue_key: results[i],
-                            match_key: testData.matches[i].match_key
-                        });
-                    }
-                    //console.log('TEST SETUP COMPLETE');
+            testSetup.setupQueuedMatches(testData)
+                .then(function (result) {
+                    testData = result;
                     done();
-                },
-                function (err) {
-                    var errMsg = 'TEST SETUP FAILED: ' + err;
-                    console.error(errMsg);
-                    done(new Error(errMsg));
-                });
+                }, done);
         });
 
         it('should set the queued_dtm of the queue record for the given match to now', function (done) {
@@ -555,25 +413,11 @@ describe('MatchQueueDAO', function () {
     describe('startMatch', function () {
 
         beforeEach(function (done) {
-            //console.log('********************************************************************************');
-            //console.log('BEGIN TEST SETUP');
-            testSetup.setupQueuedMatches(testData.matches)
-                .then(function (results) {
-                    console.log('MATCH QUEUE IDS: ' + results);
-                    for (var i = 0; i < results.length; i++) {
-                        testData.queuedMatches.push({
-                            match_queue_key: results[i],
-                            match_key: testData.matches[i].match_key
-                        });
-                    }
-                    //console.log('TEST SETUP COMPLETE');
+            testSetup.setupQueuedMatches(testData)
+                .then(function (result) {
+                    testData = result;
                     done();
-                },
-                function (err) {
-                    var errMsg = 'TEST SETUP FAILED: ' + err;
-                    console.error(errMsg);
-                    done(new Error(errMsg));
-                });
+                }, done);
         });
 
         it('should set the started_dtm of the queue record for the given match to now', function (done) {
@@ -637,25 +481,11 @@ describe('MatchQueueDAO', function () {
     describe('finishMatch', function () {
 
         beforeEach(function (done) {
-            //console.log('********************************************************************************');
-            //console.log('BEGIN TEST SETUP');
-            testSetup.setupQueuedMatches(testData.matches)
-                .then(function (results) {
-                    console.log('MATCH QUEUE IDS: ' + results);
-                    for (var i = 0; i < results.length; i++) {
-                        testData.queuedMatches.push({
-                            match_queue_key: results[i],
-                            match_key: testData.matches[i].match_key
-                        });
-                    }
-                    //console.log('TEST SETUP COMPLETE');
+            testSetup.setupQueuedMatches(testData)
+                .then(function (result) {
+                    testData = result;
                     done();
-                },
-                function (err) {
-                    var errMsg = 'TEST SETUP FAILED: ' + err;
-                    console.error(errMsg);
-                    done(new Error(errMsg));
-                });
+                }, done);
         });
 
         it('should set the finished_dtm of the queue record for the given match to now', function (done) {

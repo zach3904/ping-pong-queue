@@ -3,54 +3,20 @@ var assert = require("assert");
 var testSetup = require('../test/TestSetup');
 var playerDAO = require('../server/daos/PlayerDAO');
 
-var testData = {
-    players: [
-        {
-            player_key: null,
-            name: 'molsen',
-            hipchat_name: '@molsen',
-            email_address: 'matthewo@porch.com',
-            skill_level: 'INTERMEDIATE',
-            'tagline': 'YeaH BuddY!'
-        }, {
-            player_key: null,
-            name: 'TheZACH (admin)',
-            hipchat_name: '@ZacharyRichards',
-            email_address: 'zachr@porch.com',
-            skill_level: 'PRO STATUS',
-            'tagline': null
-        }]
-};
+var testData;
 
 describe('PlayerDAO', function () {
 
     beforeEach(function (done) {
         console.log('********************************************************************************');
         console.log('BEGIN TEST SETUP');
+
         testSetup.clearAll()
+            .then(testSetup.setupPlayers, done)
             .then(function (result) {
-                return testSetup.setupPlayers(testData.players);
-            }, function (err) {
-                var errMsg = 'TEST SETUP FAILED: ' + err;
-                console.log(errMsg);
-                console.log('********************************************************************************');
-                done(new Error(errMsg));
-            })
-            .then(function (results) {
-                console.log('ADDED PLAYERS: ' + results);
-                for (var i = 0; i < results.length; i++) {
-                    testData.players[i].player_key = results[i];
-                }
-                console.log('TEST SETUP COMPLETE');
-                console.log('********************************************************************************');
+                testData = result;
                 done();
-            },
-            function (err) {
-                var errMsg = 'TEST SETUP FAILED: ' + err;
-                console.log(errMsg);
-                console.log('********************************************************************************');
-                done(new Error(errMsg));
-            });
+            }, done);
     });
 
     describe('getPlayerById', function () {

@@ -3,10 +3,12 @@
 var Promise = require('promise');
 
 var db = require('../server/db.js');
+var TestData = require('../test/TestData');
 var playerDAO = require('../server/daos/PlayerDAO');
 var singlePlayerDAO = require('../server/daos/SinglePlayerDAO');
 var matchDAO = require('../server/daos/MatchDAO');
 var matchQueueDAO = require('../server/daos/MatchQueueDAO');
+var challengeDAO = require('../server/daos/ChallengeDAO');
 var outcomeDAO = require('../server/daos/OutcomeDAO');
 
 module.exports = {
@@ -24,56 +26,122 @@ module.exports = {
                         return;
                     }
                     console.log('TEST DB CLEARED');
-                    resolve();
+                    resolve(new TestData());
                 });
         });
     },
 
-    setupPlayers: function (players) {
+    setupPlayers: function (testData) {
+        testData.loadPlayers();
         var playerPromises = [];
-        for (var i = 0; i < players.length; i++) {
-            playerPromises.push(playerDAO.addPlayer(players[i]));
+        for (var i = 0; i < testData.players.length; i++) {
+            playerPromises.push(playerDAO.addPlayer(testData.players[i]));
         }
-        return Promise.all(playerPromises);
+        return Promise.all(playerPromises)
+            .then(function (results) {
+                console.log('ADDED PLAYERS: ' + results);
+                testData.storePlayerKeys(results);
+                return testData;
+            },
+            function (err) {
+                var errMsg = 'TEST SETUP FAILED: ' + err;
+                console.log(errMsg);
+                throw errMsg;
+            });
     },
 
-    setupSinglePlayers: function (singlePlayers) {
+    setupSinglePlayers: function (testData) {
+        testData.loadSinglePlayers();
         var singlePlayerPromises = [];
-        for (var i = 0; i < singlePlayers.length; i++) {
-            singlePlayerPromises.push(singlePlayerDAO.addSinglePlayer(singlePlayers[i]));
+        for (var i = 0; i < testData.singlePlayers.length; i++) {
+            singlePlayerPromises.push(singlePlayerDAO.addSinglePlayer(testData.singlePlayers[i]));
         }
-        return Promise.all(singlePlayerPromises);
+        return Promise.all(singlePlayerPromises)
+            .then(function (results) {
+                console.log('ADDED SINGLE PLAYERS: ' + results);
+                testData.storeSinglePlayerKeys(results);
+                return testData;
+            },
+            function (err) {
+                var errMsg = 'TEST SETUP FAILED: ' + err;
+                console.log(errMsg);
+                throw errMsg;
+            });
     },
 
-    setupMatches: function (matches) {
+    setupMatches: function (testData) {
+        testData.loadMatches();
         var matchPromises = [];
-        for (var i = 0; i < matches.length; i++) {
-            matchPromises.push(matchDAO.createMatch(matches[i].match_type));
+        for (var i = 0; i < testData.matches.length; i++) {
+            matchPromises.push(matchDAO.createMatch(testData.matches[i].match_type));
         }
-        return Promise.all(matchPromises);
+        return Promise.all(matchPromises)
+            .then(function (results) {
+                console.log('ADDED MATCHES: ' + results);
+                testData.storeMatchKeys(results);
+                return testData;
+            },
+            function (err) {
+                var errMsg = 'TEST SETUP FAILED: ' + err;
+                console.log(errMsg);
+                throw errMsg;
+            });
     },
 
-    setupQueuedMatches: function (matches) {
+    setupQueuedMatches: function (testData) {
+        testData.loadQueuedMatches();
         var queuedMatchPromises = [];
-        for (var i = 0; i < matches.length; i++) {
-            queuedMatchPromises.push(matchQueueDAO.queueMatch(matches[i].match_key));
+        for (var i = 0; i < testData.queuedMatches.length; i++) {
+            queuedMatchPromises.push(matchQueueDAO.queueMatch(testData.queuedMatches[i].match_key));
         }
-        return Promise.all(queuedMatchPromises);
+        return Promise.all(queuedMatchPromises)
+            .then(function (results) {
+                console.log('QUEUED MATCHES: ' + results);
+                testData.storeQueuedMatches(results);
+                return testData;
+            },
+            function (err) {
+                var errMsg = 'TEST SETUP FAILED: ' + err;
+                console.log(errMsg);
+                throw errMsg;
+            });
     },
 
-    setupChallenges: function (challenges) {
+    setupChallenges: function (testData) {
+        testData.loadChallenges();
         var challengePromises = [];
-        for (var i = 0; i < challenges.length; i++) {
-            challengePromises.push(challengeDAO.createChallenge(challenges[i]));
+        for (var i = 0; i < testData.challenges.length; i++) {
+            challengePromises.push(challengeDAO.createChallenge(testData.challenges[i]));
         }
-        return Promise.all(challengePromises);
+        return Promise.all(challengePromises)
+            .then(function (results) {
+                console.log('ADDED CHALLENGES: ' + results);
+                testData.storeChallengeKeys(results);
+                return testData;
+            },
+            function (err) {
+                var errMsg = 'TEST SETUP FAILED: ' + err;
+                console.log(errMsg);
+                throw errMsg;
+            });
     },
 
-    setupOutcomes: function (outcomes) {
+    setupOutcomes: function (testData) {
+        testData.loadOutcomes();
         var outcomePromises = [];
-        for (var i = 0 ; i < outcomes.length; i++) {
-            outcomePromises.push(outcomeDAO.createOutcome(outcomes[i]));
+        for (var i = 0 ; i < testData.outcomes.length; i++) {
+            outcomePromises.push(outcomeDAO.createOutcome(testData.outcomes[i]));
         }
-        return Promise.all(outcomePromises);
+        return Promise.all(outcomePromises)
+            .then(function (results) {
+                console.log('ADDED OUTCOMES: ' + results);
+                testData.storeOutcomeKeys(results);
+                return testData;
+            },
+            function (err) {
+                var errMsg = 'TEST SETUP FAILED: ' + err;
+                console.log(errMsg);
+                throw errMsg;
+            });
     }
 };
