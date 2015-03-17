@@ -1,3 +1,5 @@
+/* global describe, it, before, after, beforeEach, afterEach */
+
 var assert = require("assert");
 var Promise = require("promise");
 var testSetup = require('../test/TestSetup');

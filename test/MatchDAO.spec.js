@@ -1,5 +1,8 @@
+/* global describe, it, before, after, beforeEach, afterEach */
+
 var assert = require("assert");
 var testSetup = require('../test/TestSetup');
+var testCases = require('../test/TestCases');
 var matchDAO = require('../server/daos/MatchDAO');
 
 var testData;
@@ -7,6 +10,7 @@ var testData;
 describe('MatchDAO', function () {
 
     beforeEach(function (done) {
+        console.log('');
         console.log('********************************************************************************');
         console.log('BEGIN TEST SETUP');
         testSetup.clearAll()
@@ -20,211 +24,104 @@ describe('MatchDAO', function () {
 
     describe('getMatchById', function () {
 
-        it('should return a match if a match with the given ID exists', function (done) {
-            matchDAO.getMatchById(testData.matches[0].match_key)
-                .then(function (match) {
-                    try {
-                        assert(match != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                }, function (err) {
-                    done(new Error(err));
-                });
+        it('should return a match if one with the given ID exists', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectResult(
+                matchDAO.getMatchById,
+                [testData.matches[0].match_key],
+                testData.matches[0],
+                done);
         });
 
-        it('should return null if no match with the given ID exist', function (done) {
-            matchDAO.getMatchById(2000000000)
-                .then(function (match) {
-                    try {
-                        assert(match == null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                }, function (err) {
-                    done(new Error(err));
-                });
+        it('should return null if no match with the given ID exists', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectNoResult(matchDAO.getMatchById, [2000000000], done);
         });
 
         it('should return an error if the given ID is null', function (done) {
-            matchDAO.getMatchById()
-                .then(function (match) {
-                    done(new Error("Failed to fail " + match));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            console.log('********************************************************************************');
+            testCases.expectError(matchDAO.getMatchById, [null], done);
         });
 
         it('should return an error if the given ID is invalid', function (done) {
-            matchDAO.getMatchById('ABC')
-                .then(function (match) {
-                    done(new Error("Failed to fail " + match));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            console.log('********************************************************************************');
+            testCases.expectError(matchDAO.getMatchById, ['ABC'], done);
+        });
+    });
+
+    describe('getAllMatchDataByMatchId', function () {
+
+        it('should return a match plus all associated queue data, challenges and outcomes', function (done) {
+            console.log('********************************************************************************');
+            // FAILING
+            // If you select m.* instead the match_key is present
+            // If you select more than one table, the match_key is null
+            // But the match_type is set properly
+            // Some problem stemming from the multi-table select
+            // (but not simply related to the join because it succeeds/fails based on the SELECTED fields)
+            testCases.expectResult(
+                matchDAO.getAllMatchDataByMatchId,
+                [testData.matches[0].match_key],
+                {
+                    match_key: testData.matches[0].match_key,
+                    match_type: testData.matches[0].match_type,
+                    match_queue_key: null,
+                    queued_dtm: null,
+                    started_dtm: null,
+                    completed_dtm: null,
+                    canceled_dtm: null,
+                    challenge_key: null,
+                    challenge_dtm: null,
+                    accepted_dtm: null,
+                    rejected_dtm: null,
+                    outcome_key: null,
+                    winning_team: null,
+                    winning_score: null,
+                    losing_score: null,
+                    recorded_dtm: null
+                },
+                done);
+        });
+
+        it('should return null if no match with the given ID exists', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectNoResult(matchDAO.getAllMatchDataByMatchId, [2000000000], done);
+        });
+
+        it('should return an error if the given ID is null', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchDAO.getAllMatchDataByMatchId, [null], done);
+        });
+
+        it('should return an error if the given ID is invalid', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchDAO.getAllMatchDataByMatchId, ['ABC'], done);
         });
     });
 
     describe('createMatch', function () {
 
-        it('should create a new match with the given match_type and return the match ID', function (done) {
-            matchDAO.createMatch('SINGLES')
-                .then(function (matchKey) {
-                    try {
-                        assert(matchKey != null);
-                        assert(matchKey > 0);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                }, function (err) {
-                    done(new Error(err));
-                });
+        it('should create a new match with the given matchType and return the match ID', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectValidKey(matchDAO.createMatch, ['SINGLES'])
+                 .then(function (key) {
+                     console.log('VALIDATE RESULT');
+                     testCases.expectResult(matchDAO.getMatchById, [key],
+                         {match_key: key, match_type: 'SINGLES'}, done);
+                 }, function (err) {
+                     done(err);
+                 });
         });
 
-        it('should return an error if the given match_type is null', function (done) {
-            matchDAO.createMatch()
-                .then(function (matchKey) {
-                    done(new Error("Failed to fail " + matchKey));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+        it('should return an error if the given matchType is null', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchDAO.createMatch, [null], done);
         });
 
-        it('should return an error if the given match_type is invalid', function (done) {
-            matchDAO.createMatch('BEER PONG')
-                .then(function (matchKey) {
-                    done(new Error("Failed to fail " + matchKey));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+        it('should return an error if the given matchType is invalid', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchDAO.createMatch, ['BEER PONG'], done);
         });
     });
 
-    describe('getMatchPlayers', function () {
-
-        it('should return all players linked to the given match, split into multiple arrays by team', function (done) {
-            done(new Error('NOT IMPLEMENTED'));
-        });
-
-        it('should return an empty object if no players are linked to the given match', function (done) {
-            done(new Error('NOT IMPLEMENTED'));
-        });
-
-        it('should return an error if the given ID is null', function (done) {
-            matchDAO.getMatchById()
-                .then(function (match) {
-                    done(new Error("Failed to fail " + match));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
-        });
-
-        it('should return an error if the given ID is invalid', function (done) {
-            matchDAO.getMatchById('ABC')
-                .then(function (match) {
-                    done(new Error("Failed to fail " + match));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
-        });
-    });
-
-    describe('createMatchPlayer', function () {
-
-        it('should link the given player to the given match with the given team', function (done) {
-            matchDAO.createMatchPlayer(testData.matches[0].match_key, testData.players[0].player_key, 'CHALLENGER')
-                .then(function (matchPlayerKey) {
-                    try {
-                        assert(matchPlayerKey != null);
-                        assert(matchPlayerKey > 0);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                }, function (err) {
-                    done(new Error(err));
-                });
-        });
-
-        it('should return an error if the given matchKey does not exist', function (done) {
-            matchDAO.createMatchPlayer(2000000000, testData.players[0].player_key, 'CHALLENGER')
-                .then(function (matchPlayerKey) {
-                    done(new Error("Failed to fail " + matchPlayerKey));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
-        });
-
-        it('should return an error if the given playerKey does not exist', function (done) {
-            matchDAO.createMatchPlayer(testData.matches[0].match_key, 2000000000, 'CHALLENGER')
-                .then(function (matchPlayer) {
-                    done(new Error("Failed to fail " + matchPlayer));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
-        });
-
-        // TODO create addMatchPlayer function in MatchResource
-        // call the resource method from addMatch instead of the dao method
-        // move this test to MatchResourceTest
-        it('should return an error if the given match already has the max allowed players for it\'s match_type', function (done) {
-            done(new Error('NOT IMPLEMENTED'));
-        });
-
-    });
 });

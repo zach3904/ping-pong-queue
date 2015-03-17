@@ -10,7 +10,9 @@ module.exports = {
     getPlayerById: function (playerKey) {
         // Validate input
         if (isNaN(playerKey) || playerKey < 1) {
-            return Promise.reject("Invalid PlayerKey " + playerKey);
+            var errMsg = 'Invalid PlayerKey ' + playerKey;
+            console.log(errMsg);
+            return Promise.reject(new Error('Error in playerDAO.getPlayerById: ' + errMsg));
         }
         console.log("PROMISE playerDAO.getPlayerById " + playerKey);
         return new Promise(function (resolve, reject) {
@@ -88,7 +90,7 @@ module.exports = {
                     }
                     player = result.rows[0];
                 }
-                console.log("RESOLVE  playerDAO.getPlayerByAny " + JSON.stringify(player));
+                console.log("RESOLVE playerDAO.getPlayerByAny " + JSON.stringify(player));
                 resolve(player);
             });
         });

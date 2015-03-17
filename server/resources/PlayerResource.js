@@ -20,31 +20,39 @@ function _getPlayerById(playerId) {
 }
 
 function _getPlayerByAny(player) {
-    console.log('PROMISE playerResource._getPlayerByAny ' + JSON.stringify(player));
+    if (player == null) {
+        var errMsg = 'Player request may not be null';
+        console.log(errMsg);
+        return Promise.reject(new Error('Error in PlayerResource.getPlayerByAny: ' + errMsg));
+    }
+
     var criteria = [];
     var params = [];
 
-    if (player.player_key) {
-        criteria.push({column_name: 'player_key', 'data_type': 'int'});
-        params.push(player.player_key);
-    }
-    if (player.name) {
-        criteria.push({column_name: 'name', 'data_type': 'text'});
-        params.push(player.name);
-    }
-    if (player.hipchat_name) {
-        criteria.push({column_name: 'hipchat_name', 'data_type': 'text'});
-        params.push(player.hipchat_name);
-    }
-    if (player.email_address) {
-        criteria.push({column_name: 'email_address', 'data_type': 'text'});
-        params.push(player.email_address);
-    }
-    if (player.skill_level) {
-        criteria.push({column_name: 'skill_level', 'data_type': 'skill_level'});
-        params.push(player.skill_level);
+    try {
+        Object.keys(player).forEach(function (key) {
+            switch (key) {
+                case 'player_key':
+                    criteria.push({column_name: key, 'data_type': 'int'});
+                    params.push(player[key]);
+                    break;
+                case 'name':
+                case 'hipchat_name':
+                case 'email_address':
+                    criteria.push({column_name: key, 'data_type': 'text'});
+                    params.push(player[key]);
+                    break;
+                default:
+                    var errMsg = 'Unknown player property: ' + key;
+                    console.log(errMsg);
+                    throw new Error(errMsg);
+            }
+        });
+    } catch (e) {
+        return Promise.reject(new Error('Error in PlayerResource.getPlayerByAny: ' + e.message));
     }
 
+    console.log('PROMISE playerResource._getPlayerByAny ' + JSON.stringify(player));
     return playerDAO.getPlayerByAny(criteria, params);
 }
 
@@ -66,47 +74,45 @@ function _updatePlayer(player) {
 function _resolvePlayers(players) {
     // resolvePlayers searches for an exact match on ID, name, hipchat_name, and email_address
     var resolvedPlayerPromises = [];
-    for (var i=0; i < players.length; i++) {
+    for (var i = 0; i < players.length; i++) {
         (function (i) {
             resolvedPlayerPromises.push(
-                new Promise(function (resolve, reject) {
-                    _getPlayerByAny(players[i]).then(function (resolvedPlayer) {
+                _getPlayerByAny(players[i])
+                    .then(function (resolvedPlayer) {
                         if (resolvedPlayer) {
-                            resolve(resolvedPlayer);
+                            return resolvedPlayer;
                         } else {
                             console.log("No such player. Adding...");
-                            _addPlayer(players[i]).then(function (playerKey) {
-                                resolve({player_key: playerKey});
-                            }, function (err) {
-                                reject(err);
-                            });
+                            _addPlayer(players[i])
+                                .then(function (playerKey) {
+                                    return {player_key: playerKey};
+                                }, function (err) {
+                                    throw err;
+                                });
                         }
                     }, function (err) {
                         console.log("Error in getPlayerByAny");
-                        reject(err);
-                    });
-                })
+                        throw err;
+                    })
             );
         })(i);
     }
     console.log("PROMISE playerResource._resolvePlayers " + JSON.stringify(players));
-    return new Promise (function (resolve, reject) {
-        Promise.all(resolvedPlayerPromises)
-            .then(function (players) {
-                // Check uniqueness
-                var groupedPlayers = _.toArray(_.groupBy(players, 'player_key'));
-                if (groupedPlayers.length != players.length) {
-                    var err = "Two player requests resolved to the same player";
-                    console.log("REJECT  playerResource._resolvePlayers " + err);
-                    reject(err);
-                    return;
-                }
-                console.log("RESOLVE playerResource._resolvePlayers " + JSON.stringify(players));
-                resolve(players);
-            }, function (err) {
+    return Promise.all(resolvedPlayerPromises)
+        .then(function (players) {
+            // Check uniqueness
+            var groupedPlayers = _.toArray(_.groupBy(players, 'player_key'));
+            if (groupedPlayers.length != players.length) {
+                var err = "Two player requests resolved to the same player";
                 console.log("REJECT  playerResource._resolvePlayers " + err);
                 reject(err);
-            });
-    });
+                return;
+            }
+            console.log("RESOLVE playerResource._resolvePlayers " + JSON.stringify(players));
+            return players;
+        }, function (err) {
+            console.log("REJECT  playerResource._resolvePlayers " + err);
+            throw err;
+        });
 }
 

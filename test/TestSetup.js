@@ -22,7 +22,7 @@ module.exports = {
                 [], function (err, result) {
                     if (err) {
                         console.log("ERROR Failed to clear test db " + err);
-                        reject("ERROR Failed to clear test db " + err);
+                        reject(new Error("ERROR Failed to clear test db " + err));
                         return;
                     }
                     console.log('TEST DB CLEARED');
