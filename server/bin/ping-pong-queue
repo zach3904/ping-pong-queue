@@ -31,7 +31,6 @@ app.post   ('/player', playerService.addPlayer);
 app.put    ('/player', playerService.updatePlayer);
 app.get    ('/player/by-any', playerService.getPlayerByAny);
 app.get    ('/player/search', playerService.searchPlayers);
-app.post   ('/player/resolve-players', playerService.resolvePlayers);
 
 var matchService = require('../services/MatchService');
 app.get    ('/match', matchService.getMatchById);

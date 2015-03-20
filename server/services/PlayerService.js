@@ -56,15 +56,5 @@ module.exports = {
             }, function (err) {
                 console.error('Error in updatePlayer: ', err);
             });
-    },
-
-    resolvePlayers: function (request, response) {
-        console.log('playerService.resolvePlayers');
-        playerResource.resolvePlayers(request.body)
-            .then(function (players) {
-                response.send(players);
-            }, function (err) {
-                console.error('Error in resolvePlayers: ', err);
-            });
     }
 };

@@ -51,14 +51,14 @@ module.exports = {
         //}
         console.log('PROMISE matchDAO.createMatch ' + matchType);
         return new Promise(function (resolve, reject) {
-            db.query('INSERT INTO ping_pong.matches (match_type) VALUES ($1::match_type) RETURNING match_key;',
+            db.query('INSERT INTO ping_pong.matches (match_type) VALUES ($1::match_type) RETURNING *;',
                 [matchType], function (err, result) {
                     if (err) {
                         console.log("REJECT  matchDAO.createMatch " + err);
                         reject(err);
                     } else {
-                        console.log("RESOLVE matchDAO.createMatch " + result.rows[0].match_key);
-                        resolve(parseInt(result.rows[0].match_key));
+                        console.log("RESOLVE matchDAO.createMatch " + JSON.stringify(result.rows[0]));
+                        resolve(result.rows[0]);
                     }
                 });
         });
@@ -75,12 +75,30 @@ module.exports = {
         }
         console.log('PROMISE matchDAO.getMatchById ' + matchKey);
         return new Promise(function (resolve, reject) {
-            var sql = 'SELECT * FROM ping_pong.matches m' +
+            // Must specify fields explicitly to avoid duplicate result field issue
+            // See test pg.spec.js for more info
+            var sql = 'SELECT ' +
+                '   m.match_key,' +
+                '   m.match_type,' +
+                '   mq.match_queue_key,' +
+                '   mq.queued_dtm,' +
+                '   mq.started_dtm,' +
+                '   mq.completed_dtm,' +
+                '   mq.canceled_dtm,' +
+                '   c.challenge_key,' +
+                '   c.challenge_dtm,' +
+                '   c.accepted_dtm,' +
+                '   c.rejected_dtm,' +
+                '   o.outcome_key,' +
+                '   o.winning_team,' +
+                '   o.winning_score,' +
+                '   o.losing_score,' +
+                '   o.recorded_dtm' +
+                ' FROM ping_pong.matches m' +
                 ' LEFT JOIN ping_pong.match_queue mq ON mq.match_key = m.match_key' +
                 ' LEFT JOIN ping_pong.challenges c ON c.match_key = m.match_key' +
                 ' LEFT JOIN ping_pong.outcomes o ON o.match_key = m.match_key' +
                 ' WHERE m.match_key = $1::bigint;';
-            console.log(sql);
             db.query(sql,
                 [matchKey], function (err, result) {
                     console.log(result.rows);

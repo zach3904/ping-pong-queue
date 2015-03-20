@@ -34,13 +34,13 @@ module.exports = {
     createOutcome: function (match_key, winning_team, winning_score, losing_score) {
         return new Promise(function (resolve, reject) {
             db.query('INSERT INTO ping_pong.outcomes (match_key, winning_team, winning_score, losing_score)' +
-                ' VALUES ($1::bigint, $2::team, $3::int, $4::int) RETURNING outcome_key;',
+                ' VALUES ($1::bigint, $2::team, $3::int, $4::int) RETURNING *;',
                 [match_key, winning_team, winning_score, losing_score], function (err, result) {
                     if (err) {
                         reject(err);
                         return;
                     }
-                    resolve(result.rows[0].outcome_key);
+                    resolve(result.rows[0]);
                 });
         });
     }

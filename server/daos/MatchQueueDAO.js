@@ -48,15 +48,15 @@ module.exports = {
         }
         console.log("PROMISE matchQueueDAO.queueMatch " + matchKey);
         return new Promise(function (resolve, reject) {
-            db.query('INSERT INTO ping_pong.match_queue (match_key) VALUES ($1::bigint) RETURNING match_queue_key;',
+            db.query('INSERT INTO ping_pong.match_queue (match_key) VALUES ($1::bigint) RETURNING *;',
                 [matchKey], function (err, result) {
                     if (err) {
                         console.log("REJECT  matchQueueDAO.queueMatch " + err);
                         reject(err);
                         return;
                     }
-                    console.log("RESOLVE matchQueueDAO.queueMatch " + result.rows[0].match_queue_key);
-                    resolve(parseInt(result.rows[0].match_queue_key));
+                    console.log("RESOLVE matchQueueDAO.queueMatch " + JSON.stringify(result.rows[0]));
+                    resolve(result.rows[0]);
                 });
         });
     },

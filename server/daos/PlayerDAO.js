@@ -134,25 +134,30 @@ module.exports = {
         console.log("PROMISE playerDAO.addPlayer " + JSON.stringify(player));
         return new Promise(function (resolve, reject) {
             db.query('INSERT INTO ping_pong.players (name, hipchat_name, email_address, skill_level, tagline)' +
-                ' VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) RETURNING player_key;',
+                ' VALUES ($1::text, $2::text, $3::text, $4::skill_level, $5::text) RETURNING *;',
                 [player.name, player.hipchat_name, player.email_address, player.skill_level, player.tagline], function (err, result) {
                     if (err) {
                         console.log("REJECT  playerDAO.addPlayer " + err);
                         reject(err);
                         return;
                     }
-                    console.log("RESOLVE  playerDAO.addPlayer " + result.rows[0].player_key);
-                    resolve(parseInt(result.rows[0].player_key));
+                    console.log("RESOLVE  playerDAO.addPlayer " + JSON.stringify(result.rows[0]));
+                    resolve(result.rows[0]);
                 });
         });
     },
 
     updatePlayer: function (player) {
-        if (player.player_key == null || typeof player.player_key != 'number' || player.player_key < 1) {
-            return Promise.reject("Missing required player ID " + JSON.stringify(player));
+        if (player.player_key == null) {
+            var err = 'Required player_key may not be null';
+            console.log('FAIL    playerDAO.updatePlayer ' + err);
+            return Promise.reject(err);
+        }
+        if (isNaN(player.player_key) || player.player_key < 1) {
+            return Promise.reject("Invalid player key " + player.player_key);
         }
         if (player.name == null || typeof player.name != 'string' || player.name.length < 1) {
-            return Promise.reject("Missing required player name " + JSON.stringify(player));
+            return Promise.reject("Missing or invalid required player name " + JSON.stringify(player));
         }
         console.log("PROMISE playerDAO.updatePlayer " + JSON.stringify(player));
         return new Promise(function (resolve, reject) {

@@ -45,13 +45,14 @@ module.exports = {
 
     addSinglePlayer: function (player_key, match_type, skill_level) {
         return new Promise(function (resolve, reject) {
-            db.query('INSERT INTO ping_pong.single_player_pool (player_key, match_type, skill_level) VALUES ($1::bigint, $3::match_type, $2::skill_level) RETURNING single_player_key;',
+            db.query('INSERT INTO ping_pong.single_player_pool (player_key, match_type, skill_level) ' +
+                'VALUES ($1::bigint, $3::match_type, $2::skill_level) RETURNING *;',
                 [player_key, match_type, skill_level], function (err, result) {
                     if (err) {
                         reject(err);
                         return;
                     }
-                    resolve(result.rows[0].single_player_key);
+                    resolve(result.rows[0]);
                 });
         });
     },

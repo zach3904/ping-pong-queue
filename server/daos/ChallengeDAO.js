@@ -34,13 +34,13 @@ module.exports = {
     createChallenge: function (match_key) {
         //TODO: NOT WORKING
         return new Promise(function (resolve, reject) {
-            db.query('INSERT INTO ping_pong.challenges (match_key) VALUES ($1::bigint) RETURNING challenge_key;',
+            db.query('INSERT INTO ping_pong.challenges (match_key) VALUES ($1::bigint) RETURNING *;',
                 [match_key], function (err, result) {
                     if (err) {
                         reject(err);
                         return;
                     }
-                    resolve(result.rows[0].challenge_key);
+                    resolve(result.rows[0]);
                 });
         });
     },

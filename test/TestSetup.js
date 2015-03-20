@@ -32,15 +32,15 @@ module.exports = {
     },
 
     setupPlayers: function (testData) {
-        testData.loadPlayers();
+        var playerRequests = testData.getPlayerRequests();
         var playerPromises = [];
-        for (var i = 0; i < testData.players.length; i++) {
-            playerPromises.push(playerDAO.addPlayer(testData.players[i]));
+        for (var i = 0; i < playerRequests.length; i++) {
+            playerPromises.push(playerDAO.addPlayer(playerRequests[i]));
         }
         return Promise.all(playerPromises)
             .then(function (results) {
-                console.log('ADDED PLAYERS: ' + results);
-                testData.storePlayerKeys(results);
+                console.log('ADDED PLAYERS: ' + JSON.stringify(results));
+                testData.setPlayers(results);
                 return testData;
             },
             function (err) {
@@ -51,15 +51,15 @@ module.exports = {
     },
 
     setupSinglePlayers: function (testData) {
-        testData.loadSinglePlayers();
+        var singlePlayerRequests = testData.getSinglePlayerRequests();
         var singlePlayerPromises = [];
-        for (var i = 0; i < testData.singlePlayers.length; i++) {
-            singlePlayerPromises.push(singlePlayerDAO.addSinglePlayer(testData.singlePlayers[i]));
+        for (var i = 0; i < singlePlayerRequests.length; i++) {
+            singlePlayerPromises.push(singlePlayerDAO.addSinglePlayer(singlePlayerRequests[i]));
         }
         return Promise.all(singlePlayerPromises)
             .then(function (results) {
-                console.log('ADDED SINGLE PLAYERS: ' + results);
-                testData.storeSinglePlayerKeys(results);
+                console.log('ADDED SINGLE PLAYERS: ' + JSON.stringify(results));
+                testData.setSinglePlayers(results);
                 return testData;
             },
             function (err) {
@@ -70,15 +70,15 @@ module.exports = {
     },
 
     setupMatches: function (testData) {
-        testData.loadMatches();
+        var matchRequests = testData.getMatchRequests();
         var matchPromises = [];
-        for (var i = 0; i < testData.matches.length; i++) {
-            matchPromises.push(matchDAO.createMatch(testData.matches[i].match_type));
+        for (var i = 0; i < matchRequests.length; i++) {
+            matchPromises.push(matchDAO.createMatch(matchRequests[i].match_type));
         }
         return Promise.all(matchPromises)
             .then(function (results) {
-                console.log('ADDED MATCHES: ' + results);
-                testData.storeMatchKeys(results);
+                console.log('ADDED MATCHES: ' + JSON.stringify(results));
+                testData.setMatches(results);
                 return testData;
             },
             function (err) {
@@ -89,15 +89,15 @@ module.exports = {
     },
 
     setupQueuedMatches: function (testData) {
-        testData.loadQueuedMatches();
+        var matchQueueRequests = testData.getMatchQueueRequests();
         var queuedMatchPromises = [];
-        for (var i = 0; i < testData.queuedMatches.length; i++) {
-            queuedMatchPromises.push(matchQueueDAO.queueMatch(testData.queuedMatches[i].match_key));
+        for (var i = 0; i < matchQueueRequests.length; i++) {
+            queuedMatchPromises.push(matchQueueDAO.queueMatch(matchQueueRequests[i].match_key));
         }
         return Promise.all(queuedMatchPromises)
             .then(function (results) {
-                console.log('QUEUED MATCHES: ' + results);
-                testData.storeQueuedMatches(results);
+                console.log('QUEUED MATCHES: ' + JSON.stringify(results));
+                testData.setQueuedMatches(results);
                 return testData;
             },
             function (err) {
@@ -108,15 +108,15 @@ module.exports = {
     },
 
     setupChallenges: function (testData) {
-        testData.loadChallenges();
+        var challengeRequests = testData.getChallengeRequests();
         var challengePromises = [];
-        for (var i = 0; i < testData.challenges.length; i++) {
-            challengePromises.push(challengeDAO.createChallenge(testData.challenges[i]));
+        for (var i = 0; i < challengeRequests.length; i++) {
+            challengePromises.push(challengeDAO.createChallenge(challengeRequests[i]));
         }
         return Promise.all(challengePromises)
             .then(function (results) {
-                console.log('ADDED CHALLENGES: ' + results);
-                testData.storeChallengeKeys(results);
+                console.log('ADDED CHALLENGES: ' + JSON.stringify(results));
+                testData.setChallenges(results);
                 return testData;
             },
             function (err) {
@@ -127,15 +127,15 @@ module.exports = {
     },
 
     setupOutcomes: function (testData) {
-        testData.loadOutcomes();
+        var outcomeRequests = testData.getOutcomeRequests();
         var outcomePromises = [];
-        for (var i = 0 ; i < testData.outcomes.length; i++) {
-            outcomePromises.push(outcomeDAO.createOutcome(testData.outcomes[i]));
+        for (var i = 0 ; i < outcomeRequests.length; i++) {
+            outcomePromises.push(outcomeDAO.createOutcome(outcomeRequests[i]));
         }
         return Promise.all(outcomePromises)
             .then(function (results) {
-                console.log('ADDED OUTCOMES: ' + results);
-                testData.storeOutcomeKeys(results);
+                console.log('ADDED OUTCOMES: ' + JSON.stringify(results));
+                testData.setOutcomes(results);
                 return testData;
             },
             function (err) {

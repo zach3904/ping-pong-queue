@@ -10,8 +10,7 @@ module.exports = {
     getPlayerByAny: _getPlayerByAny,
     searchPlayers: _searchPlayers,
     addPlayer: _addPlayer,
-    updatePlayer: _updatePlayer,
-    resolvePlayers: _resolvePlayers
+    updatePlayer: _updatePlayer
 };
 
 function _getPlayerById(playerId) {
@@ -70,49 +69,3 @@ function _updatePlayer(player) {
     console.log('PROMISE playerResource._updatePlayer ' + player);
     return playerDAO.updatePlayer(player);
 }
-
-function _resolvePlayers(players) {
-    // resolvePlayers searches for an exact match on ID, name, hipchat_name, and email_address
-    var resolvedPlayerPromises = [];
-    for (var i = 0; i < players.length; i++) {
-        (function (i) {
-            resolvedPlayerPromises.push(
-                _getPlayerByAny(players[i])
-                    .then(function (resolvedPlayer) {
-                        if (resolvedPlayer) {
-                            return resolvedPlayer;
-                        } else {
-                            console.log("No such player. Adding...");
-                            _addPlayer(players[i])
-                                .then(function (playerKey) {
-                                    return {player_key: playerKey};
-                                }, function (err) {
-                                    throw err;
-                                });
-                        }
-                    }, function (err) {
-                        console.log("Error in getPlayerByAny");
-                        throw err;
-                    })
-            );
-        })(i);
-    }
-    console.log("PROMISE playerResource._resolvePlayers " + JSON.stringify(players));
-    return Promise.all(resolvedPlayerPromises)
-        .then(function (players) {
-            // Check uniqueness
-            var groupedPlayers = _.toArray(_.groupBy(players, 'player_key'));
-            if (groupedPlayers.length != players.length) {
-                var err = "Two player requests resolved to the same player";
-                console.log("REJECT  playerResource._resolvePlayers " + err);
-                reject(err);
-                return;
-            }
-            console.log("RESOLVE playerResource._resolvePlayers " + JSON.stringify(players));
-            return players;
-        }, function (err) {
-            console.log("REJECT  playerResource._resolvePlayers " + err);
-            throw err;
-        });
-}
-

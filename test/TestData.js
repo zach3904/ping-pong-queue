@@ -59,68 +59,79 @@ TestData.EXAMPLE_SINGLE_PLAYERS = [
     }
 ];
 
-TestData.prototype.loadPlayers = function () {
-    console.log('TestData.loadPlayers');
-    this.players = this.EXAMPLE_PLAYERS;
+TestData.prototype.getPlayerRequests = function () {
+    console.log('TestData.getPlayerRequests');
+    return this.EXAMPLE_PLAYERS;
 };
 
-TestData.prototype.storePlayerKeys = function (keys) {
-    console.log('TestData.storePlayerKeys');
-    for (var i = 0; i < keys.length; i++) {
-        this.players[i].player_key = keys[i];
-    }
+TestData.prototype.setPlayers = function (players) {
+    console.log('TestData.setPlayers');
+    this.players = players;
 };
 
-TestData.prototype.loadMatches = function () {
-    console.log('TestData.loadMatches');
-    this.matches = this.EXAMPLE_MATCHES;
+TestData.prototype.getMatchRequests = function () {
+    console.log('TestData.getMatchRequests');
+    return this.EXAMPLE_MATCHES;
 };
 
-TestData.prototype.storeMatchKeys = function (keys) {
-    console.log('TestData.storeMatchKeys');
-    for (var i = 0; i < keys.length; i++) {
-        this.matches[i].match_key = keys[i];
-    }
+TestData.prototype.setMatches = function (matches) {
+    console.log('TestData.setMatches');
+    this.matches = matches;
 };
 
-TestData.prototype.loadQueuedMatches = function () {
-    console.log('TestData.loadQueuedMatches');
+
+TestData.prototype.getMatchQueueRequests = function () {
+    console.log('TestData.getMatchQueueRequests');
+    var matchQueueRequests = [];
     if (this.matches.length > 0) {
         for (var i = 0; i < this.matches.length; i++) {
-            this.queuedMatches.push({match_key: this.matches[i].match_key});
+            matchQueueRequests.push({match_key: this.matches[i].match_key});
         }
     } else {
-        throw new Error('Failed to load queued matches: no matches to load from');
+        throw new Error('Failed to get match queue requests: no matches to load from');
     }
+    return matchQueueRequests;
 };
 
-TestData.prototype.storeQueuedMatches = function (keys) {
-    console.log('TestData.saveMatchQueueKeysAndDtms');
-    for (var i = 0; i < keys.length; i++) {
-        this.queuedMatches[i].match_queue_key = keys[i];
-        // should load the queued_dtm here too
-        // but would require fetching it
-        // or changing add func to return full object
-    }
+TestData.prototype.setQueuedMatches = function (queuedMatches) {
+    console.log('TestData.setQueuedMatches');
+    this.queuedMatches = queuedMatches;
 };
 
-TestData.prototype.loadSinglePlayers = function () {
-    console.log('TestData.loadSinglePlayers');
-    this.singlePlayers = this.EXAMPLE_SINGLE_PLAYERS;
-    if (this.players.length == this.singlePlayers.length) {
-        for (var i = 0; i < this.singlePlayers.length; i++) {
-            this.singlePlayers[i].player_key = this.players[i].player_key;
+TestData.prototype.getSinglePlayerRequests = function () {
+    console.log('TestData.getSinglePlayerRequests');
+    var singlePlayerRequests = this.EXAMPLE_SINGLE_PLAYERS;
+    if (singlePlayerRequests.length == this.players.length) {
+        for (var i = 0; i < singlePlayerRequests.length; i++) {
+            singlePlayerRequests[i].player_key = this.players[i].player_key;
         }
     } else {
-        throw new Error('Failed to load single players: player count does not equal single player count');
+        throw new Error('Failed to get single player requests: player count does not equal single player count');
     }
+    return singlePlayerRequests;
 };
 
-TestData.prototype.storeSinglePlayerKeys = function (keys) {
-    console.log('TestData.saveSinglePlayerKeys');
-    for (var i = 0; i < keys.length; i++) {
-        this.singlePlayers[i].single_player_key = keys[i];
-    }
+TestData.prototype.setSinglePlayers = function (singlePlayers) {
+    console.log('TestData.setSinglePlayer');
+    this.singlePlayers = singlePlayers;
+};
+
+TestData.prototype.getChallengeRequests = function () {
+    return [];
+};
+
+TestData.prototype.setChallenges = function (challenges) {
+    console.log('TestData.setChallenges');
+    this.challenges = challenges;
+};
+
+TestData.prototype.getOutcomeRequests = function () {
+    return [];
+};
+
+TestData.prototype.setOutcomes = function (outcomes) {
+    console.log('TestData.setOutcomes');
+    this.outcomes = outcomes;
 };
 
 module.exports = TestData;

@@ -197,7 +197,16 @@ describe('PlayerDAO', function () {
 
         it('should insert a new player with the given name', function (done) {
             console.log('********************************************************************************');
-            testCases.expectValidKey(playerDAO.addPlayer, [{name: "ADDED PLAYER " + Date.now()}], done);
+            var playerToAdd = {name: "ADDED PLAYER " + Date.now()};
+            var expectedResult = {
+                name: "ADDED PLAYER " + Date.now(),
+                hipchat_name:null,
+                email_address:null,
+                skill_level:null,
+                tagline:null
+            };
+            testCases.expectResultWithValidKey(playerDAO.addPlayer,
+                [playerToAdd], expectedResult, 'player_key', done);
         });
 
         it('should return an error if the player name is null', function (done) {

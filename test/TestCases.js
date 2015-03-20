@@ -59,6 +59,37 @@ module.exports = {
             });
     },
 
+    expectResultWithValidKey: function (func, args, expectedResult, keyKey, done) {
+        return func.apply(null, args)
+            .then(function (result) {
+                try {
+
+                    var key = result[keyKey];
+                    delete result[keyKey];
+                    //console.log('VALIDATE ' + keyKey + ' IS VALID : ' + key);
+                    assert(key != null, 'Expected non-null key, found null');
+                    assert(key === parseInt(key) || key === parseInt(key).toString(), 'Expected key to be an integer (or string representation), found ' + key);
+                    assert(parseInt(key).toString() === key, 'Expected key to be a string representation of an integer, found ' + key);
+                    //assert(key === parseInt(key), 'Expected key to be an integer, found ' + key);
+                    assert(key > 0, 'Expected key greater than zero, found ' + key);
+
+                    assert.deepEqual(result, expectedResult, 'Result not equal to expected (compare with deepEqual)');
+
+                } catch (e) {
+                    console.log('EXPECTED: ' + JSON.stringify(expectedResult) + ' WITH VALID KEY');
+                    console.log('ACTUAL:   ' + JSON.stringify(result));
+                    if (done) done(e);
+                    else throw e;
+                    return;
+                }
+                if (done) done();
+                return key;
+            }, function (err) {
+                if (done) done(new Error(err));
+                else throw new Error(err);
+            });
+    },
+
     expectValidKey: function (func, args, done) {
         return func.apply(null, args)
             .then(function (key) {

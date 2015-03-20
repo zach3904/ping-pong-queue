@@ -59,10 +59,11 @@ describe('MatchQueueResource', function () {
         it('should create a new match_queue record with the given matchKey and return the matchQueueKey', function (done) {
             console.log('********************************************************************************');
             matchQueueResource.queueMatch(testData.matches[0].match_key)
-                .then(function (matchQueueKey) {
+                .then(function (queuedMatch) {
                     try {
-                        assert(matchQueueKey != null);
-                        assert(matchQueueKey > 0);
+                        assert(queuedMatch != null);
+                        assert(queuedMatch.match_queue_key > 0);
+                        assert(queuedMatch.queued_dtm != null);
                     } catch (e) {
                         done(e);
                         return;

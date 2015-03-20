@@ -53,12 +53,6 @@ describe('MatchDAO', function () {
 
         it('should return a match plus all associated queue data, challenges and outcomes', function (done) {
             console.log('********************************************************************************');
-            // FAILING
-            // If you select m.* instead the match_key is present
-            // If you select more than one table, the match_key is null
-            // But the match_type is set properly
-            // Some problem stemming from the multi-table select
-            // (but not simply related to the join because it succeeds/fails based on the SELECTED fields)
             testCases.expectResult(
                 matchDAO.getAllMatchDataByMatchId,
                 [testData.matches[0].match_key],
@@ -103,14 +97,7 @@ describe('MatchDAO', function () {
 
         it('should create a new match with the given matchType and return the match ID', function (done) {
             console.log('********************************************************************************');
-            testCases.expectValidKey(matchDAO.createMatch, ['SINGLES'])
-                 .then(function (key) {
-                     console.log('VALIDATE RESULT');
-                     testCases.expectResult(matchDAO.getMatchById, [key],
-                         {match_key: key, match_type: 'SINGLES'}, done);
-                 }, function (err) {
-                     done(err);
-                 });
+            testCases.expectResultWithValidKey(matchDAO.createMatch, ['SINGLES'], {match_type: 'SINGLES'}, 'match_key', done);
         });
 
         it('should return an error if the given matchType is null', function (done) {

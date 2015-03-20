@@ -21,7 +21,7 @@ module.exports = {
         console.log('matchService.addMatch');
         matchResource.addMatch(
             request.body.match_type,
-            request.body.match_teams
+            request.body.match_players
         ).then(function (match) {
             response.send(match);
         }, function (err) {

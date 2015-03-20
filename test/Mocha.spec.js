@@ -7,7 +7,7 @@ var assert = require("assert");
 // THE FOLLOWING TESTS EXPLORE THAT ISSUE AND ARE ALL EXPECTED TO FAIL
 // SOME WILL FAIL GRACEFULLY WITH A MEANINGFUL ERROR MESSAGE
 // SOME WILL FAIL DUE TO TIMEOUT (BAD)
-describe('Mocha Tests', function () {
+describe.skip('Mocha Tests', function () {
     it('should produce meaningful error messages when an assertion fails', function () {
         assert(false);
     });

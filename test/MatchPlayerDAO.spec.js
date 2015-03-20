@@ -60,13 +60,18 @@ describe('MatchPlayerDAO', function () {
 
         it('should link the given player to the given match with the given team', function (done) {
             console.log('********************************************************************************');
-            testCases.expectValidKey(matchDAO.createMatchPlayer,
-                [testData.matches[0].match_key, testData.players[0].player_key, 'CHALLENGER'], done);
+            testCases.expectResultWithValidKey(matchDAO.createMatchPlayer,
+                [testData.matches[0].match_key, testData.players[0].player_key, 'CHALLENGER'],
+                {
+                    match_key: testData.matches[0].match_key,
+                    player_key: testData.players[0].player_key,
+                    team: 'CHALLENGER'
+                }, 'match_player_key', done);
         });
 
         it('should return an error if the given matchKey does not exist', function (done) {
             console.log('********************************************************************************');
-            testSetup.expectError(matchDAO.createMatchPlayer,
+            testCases.expectError(matchDAO.createMatchPlayer,
                 [2000000000, testData.players[0].player_key, 'CHALLENGER'], done);
         });
 

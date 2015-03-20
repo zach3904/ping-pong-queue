@@ -3,7 +3,10 @@
 var Promise = require("promise");
 var assert = require("assert");
 
-describe('Promise Tests', function () {
+// NOTE: you can use this polyfill to play with Promises in JSFiddle
+// <script src="https://www.promisejs.org/polyfills/promise-6.1.0.js"></script>
+
+describe.skip('Promise Tests', function () {
 
     it('should call the reject handler of the next "then" in the promise chain if an error is thrown', function (done) {
         new Promise(function (resolve, reject) {

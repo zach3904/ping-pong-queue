@@ -81,14 +81,14 @@ module.exports = {
         }
         console.log('PROMISE matchDAO.createMatchPlayer ' + matchKey +" " + playerKey + " " + team);
         return new Promise(function (resolve, reject) {
-            db.query('INSERT into ping_pong.match_player (match_key, player_key, team) VALUES ($1::bigint, $2::bigint, $3::team) RETURNING match_player_key;',
+            db.query('INSERT into ping_pong.match_player (match_key, player_key, team) VALUES ($1::bigint, $2::bigint, $3::team) RETURNING *;',
                 [matchKey, playerKey, team], function (err, result) {
                     if (err) {
                         console.log("REJECT  matchDAO.createMatchPlayer " + err);
                         reject(err);
                     } else {
-                        console.log("RESOLVE matchDAO.createMatchPlayer " + result.rows[0].match_player_key);
-                        resolve(parseInt(result.rows[0].match_player_key));
+                        console.log("RESOLVE matchDAO.createMatchPlayer " + JSON.stringify(result.rows[0]));
+                        resolve(result.rows[0]);
                     }
                 });
         });
