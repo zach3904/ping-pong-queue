@@ -32,31 +32,26 @@ module.exports = {
     },
 
     getMatchPlayers: function (matchKey) {
-        console.log('PROMISE matchDAO.getMatchPlayers ' + matchKey);
+        if (matchKey == null) {
+            var err = 'Required match_key may not be null';
+            console.log('FAIL    matchDAO.getMatchById ' + err);
+            return Promise.reject(err);
+        }
+        if (isNaN(matchKey) || matchKey < 1) {
+            return Promise.reject("Invalid match key " + matchKey);
+        }
+        console.log('PROMISE matchPlayerDAO.getMatchPlayers ' + matchKey);
         return new Promise(function (resolve, reject) {
             db.query('SELECT * FROM ping_pong.players p' +
                 ' JOIN ping_pong.match_player mp ON mp.player_key = p.player_key' +
                 ' WHERE mp.match_key = $1::bigint;',
                 [matchKey], function (err, result) {
-
                     if (err) {
-                        console.log("REJECT  matchDAO.getMatchPlayers " + err);
+                        console.log("REJECT  matchPlayerDAO.getMatchPlayers " + err);
                         reject(err);
                     } else {
-                        console.log("RESOLVE matchDAO.getMatchPlayers " + result.rows);
+                        console.log("RESOLVE matchPlayerDAO.getMatchPlayers " + JSON.stringify(result.rows));
                         resolve(result.rows);
-
-                        // [
-                        //    {
-                        //        player_key: 1,
-                        //        name: 'molsen',
-                        //        hipchat_name: '@molsen',
-                        //        email_address: 'matthewo@porch.com',
-                        //        skill_level: 'INTERMEDIATE',
-                        //        tagline: 'YeaH BuddY!'
-                        //    },
-                        //    ...
-                        // ]
                     }
                 });
         });
@@ -79,7 +74,7 @@ module.exports = {
         if (isNaN(playerKey) || playerKey < 1) {
             return Promise.reject("Invalid player key " + playerKey);
         }
-        console.log('PROMISE matchDAO.createMatchPlayer ' + matchKey +" " + playerKey + " " + team);
+        console.log('PROMISE matchDAO.createMatchPlayer ' + matchKey + " " + playerKey + " " + team);
         return new Promise(function (resolve, reject) {
             db.query('INSERT into ping_pong.match_player (match_key, player_key, team) VALUES ($1::bigint, $2::bigint, $3::team) RETURNING *;',
                 [matchKey, playerKey, team], function (err, result) {

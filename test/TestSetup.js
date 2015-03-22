@@ -7,6 +7,7 @@ var TestData = require('../test/TestData');
 var playerDAO = require('../server/daos/PlayerDAO');
 var singlePlayerDAO = require('../server/daos/SinglePlayerDAO');
 var matchDAO = require('../server/daos/MatchDAO');
+var matchPlayerDAO = require('../server/daos/MatchPlayerDAO');
 var matchQueueDAO = require('../server/daos/MatchQueueDAO');
 var challengeDAO = require('../server/daos/ChallengeDAO');
 var outcomeDAO = require('../server/daos/OutcomeDAO');
@@ -88,6 +89,31 @@ module.exports = {
             });
     },
 
+    setupMatchPlayers: function (testData) {
+        var matchPlayerRequests = testData.getMatchPlayerRequests();
+        var matchPlayerPromises = [];
+        for (var i = 0; i < matchPlayerRequests.length; i++) {
+            matchPlayerPromises.push(
+                matchPlayerDAO.createMatchPlayer(
+                    matchPlayerRequests[i].match_key,
+                    matchPlayerRequests[i].player_key,
+                    matchPlayerRequests[i].team
+                )
+            );
+        }
+        return Promise.all(matchPlayerPromises)
+            .then(function (results) {
+                console.log('ADDED MATCH PLAYERS: ' + JSON.stringify(results));
+                testData.setMatchPlayers(results);
+                return testData;
+            },
+            function (err) {
+                var errMsg = 'TEST SETUP FAILED: ' + err;
+                console.log(errMsg);
+                throw errMsg;
+            });
+    },
+
     setupQueuedMatches: function (testData) {
         var matchQueueRequests = testData.getMatchQueueRequests();
         var queuedMatchPromises = [];
@@ -129,7 +155,7 @@ module.exports = {
     setupOutcomes: function (testData) {
         var outcomeRequests = testData.getOutcomeRequests();
         var outcomePromises = [];
-        for (var i = 0 ; i < outcomeRequests.length; i++) {
+        for (var i = 0; i < outcomeRequests.length; i++) {
             outcomePromises.push(outcomeDAO.createOutcome(outcomeRequests[i]));
         }
         return Promise.all(outcomePromises)

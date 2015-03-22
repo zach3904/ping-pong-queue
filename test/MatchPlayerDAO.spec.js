@@ -3,7 +3,7 @@
 var assert = require("assert");
 var testSetup = require('../test/TestSetup');
 var testCases = require('../test/TestCases');
-var matchDAO = require('../server/daos/MatchPlayerDAO');
+var matchPlayerDAO = require('../server/daos/MatchPlayerDAO');
 
 var testData;
 
@@ -24,43 +24,53 @@ describe('MatchPlayerDAO', function () {
 
     describe('getMatchPlayers', function () {
 
-        it('should return all players linked to the given match, split into multiple arrays by team', function (done) {
-            console.log('********************************************************************************');
-            testCases.expectResult(
-                matchDAO.getMatchPlayers,
-                [testData.matches[0].match_key],
-                {
-                    'CHALLENGER': [
-                        testData.players[0]
-                    ],
-                    'CHALLENGED': [
-                        testData.players[1]
-                    ]
-                },
-                done);
+        describe('with matchPlayers setup', function () {
+
+            beforeEach(function (done) {
+                testSetup.setupMatchPlayers(testData)
+                    .then(function (result) {
+                        testData = result;
+                        done();
+                    }, done);
+            });
+
+            it('should return all players linked to the given match, with teams', function (done) {
+                console.log('********************************************************************************');
+                testCases.expectResult(
+                    matchPlayerDAO.getMatchPlayers,
+                    [testData.matches[0].match_key],
+                    testData.getExpectedMatchPlayers(testData.matches[0].match_key),
+                    done);
+            });
+
+            it('should return an error if the given match ID is null', function (done) {
+                console.log('********************************************************************************');
+                testCases.expectError(matchPlayerDAO.getMatchPlayers, [null], done);
+            });
+
+            it('should return an error if the given match ID is invalid', function (done) {
+                console.log('********************************************************************************');
+                testCases.expectError(matchPlayerDAO.getMatchPlayers, ['ABC'], done);
+            });
+
         });
 
-        it('should return an empty object if no players are linked to the given match', function (done) {
-            console.log('********************************************************************************');
-            done(new Error('NOT IMPLEMENTED'));
+        describe('without matchPlayers setup', function () {
+
+            it('should return an empty array if no players are linked to the given match', function (done) {
+                console.log('********************************************************************************');
+                testCases.expectEmptyArray(matchPlayerDAO.getMatchPlayers, [testData.matches[0].match_key], done);
+            });
+
         });
 
-        it('should return an error if the given ID is null', function (done) {
-            console.log('********************************************************************************');
-            testCases.expectError(matchDAO.getMatchPlayers, [null], done);
-        });
-
-        it('should return an error if the given ID is invalid', function (done) {
-            console.log('********************************************************************************');
-            testCases.expectError(matchDAO.getMatchPlayers, ['ABC'], done);
-        });
     });
 
     describe('createMatchPlayer', function () {
 
         it('should link the given player to the given match with the given team', function (done) {
             console.log('********************************************************************************');
-            testCases.expectResultWithValidKey(matchDAO.createMatchPlayer,
+            testCases.expectResultWithValidKey(matchPlayerDAO.createMatchPlayer,
                 [testData.matches[0].match_key, testData.players[0].player_key, 'CHALLENGER'],
                 {
                     match_key: testData.matches[0].match_key,
@@ -71,22 +81,14 @@ describe('MatchPlayerDAO', function () {
 
         it('should return an error if the given matchKey does not exist', function (done) {
             console.log('********************************************************************************');
-            testCases.expectError(matchDAO.createMatchPlayer,
+            testCases.expectError(matchPlayerDAO.createMatchPlayer,
                 [2000000000, testData.players[0].player_key, 'CHALLENGER'], done);
         });
 
         it('should return an error if the given playerKey does not exist', function (done) {
             console.log('********************************************************************************');
-            testCases.expectError(matchDAO.createMatchPlayer,
+            testCases.expectError(matchPlayerDAO.createMatchPlayer,
                 [testData.matches[0].match_key, 2000000000, 'CHALLENGER'], done);
-        });
-
-        // TODO create addMatchPlayer function in MatchResource
-        // call the resource method from addMatch instead of the dao method
-        // move this test to MatchResourceTest
-        it('should return an error if the given match already has the max allowed players for it\'s match_type', function (done) {
-            console.log('********************************************************************************');
-            done(new Error('NOT IMPLEMENTED'));
         });
 
     });

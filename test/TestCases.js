@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('underscore');
 var assert = require("assert");
 
 module.exports = {
@@ -116,7 +117,26 @@ module.exports = {
         return func.apply(null, args)
             .then(function (result) {
                 try {
-                    assert(result == null, 'Expected null result, found non-null');
+                    assert(result == null, 'Expected null result, found non-null: ' + JSON.stringify(result));
+                } catch (e) {
+                    if (done) done(e);
+                    else throw e;
+                    return;
+                }
+                if (done) done();
+            }, function (err) {
+                if (done) done(new Error(err));
+                else throw new Error(err);
+            });
+    },
+
+    expectEmptyArray: function (func, args, done) {
+        return func.apply(null, args)
+            .then(function (result) {
+                try {
+                    assert(result != null, 'Expected empty array, found null');
+                    assert(_.isArray(result), 'Expected empty array, found: ' + JSON.stringify(result));
+                    assert(_.isEmpty(result), 'Expected empty array, found: ' + JSON.stringify(result));
                 } catch (e) {
                     if (done) done(e);
                     else throw e;
