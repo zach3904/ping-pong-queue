@@ -1,8 +1,8 @@
 /* global describe, it, before, after, beforeEach, afterEach */
 
 var assert = require("assert");
-var testSetup = require('../test/TestSetup');
-var matchQueueResource = require('../server/resources/MatchQueueResource');
+var testSetup = require('../TestSetup');
+var matchQueueResource = require('../../server/resources/MatchQueueResource');
 
 var testData;
 

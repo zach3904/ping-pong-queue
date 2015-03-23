@@ -2,8 +2,8 @@
 
 var Promise = require("promise");
 var assert = require("assert");
-var db = require('../server/db');
-var matchDAO = require('../server/daos/MatchDAO');
+var db = require('../../server/db');
+var matchDAO = require('../../server/daos/MatchDAO');
 
 // PG SELECT * AND JOIN ERROR (duplicate column names in result set)
 //

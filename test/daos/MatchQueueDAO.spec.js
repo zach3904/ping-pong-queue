@@ -2,8 +2,8 @@
 
 var assert = require("assert");
 var Promise = require("promise");
-var testSetup = require('../test/TestSetup');
-var matchQueueDAO = require('../server/daos/MatchQueueDAO');
+var testSetup = require('../TestSetup');
+var matchQueueDAO = require('../../server/daos/MatchQueueDAO');
 
 var testData;
 

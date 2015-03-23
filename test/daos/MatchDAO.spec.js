@@ -1,9 +1,9 @@
 /* global describe, it, before, after, beforeEach, afterEach */
 
 var assert = require("assert");
-var testSetup = require('../test/TestSetup');
-var testCases = require('../test/TestCases');
-var matchDAO = require('../server/daos/MatchDAO');
+var testSetup = require('../TestSetup');
+var testCases = require('../TestCases');
+var matchDAO = require('../../server/daos/MatchDAO');
 
 var testData;
 
