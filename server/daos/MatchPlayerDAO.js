@@ -44,7 +44,8 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             db.query('SELECT * FROM ping_pong.players p' +
                 ' JOIN ping_pong.match_player mp ON mp.player_key = p.player_key' +
-                ' WHERE mp.match_key = $1::bigint;',
+                ' WHERE mp.match_key = $1::bigint' +
+                ' ORDER BY mp.match_player_key ASC;',
                 [matchKey], function (err, result) {
                     if (err) {
                         console.log("REJECT  matchPlayerDAO.getMatchPlayers " + err);
