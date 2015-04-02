@@ -7,6 +7,7 @@ var TableManager = require('../TableManager');
 
 module.exports = {
     name: 'matchResource',
+    initTableManager: initTableManager,
     getQueuedMatchById: getQueuedMatchById,
     queueMatch: queueMatch,
     getNextMatch: getNextMatch,
@@ -28,6 +29,11 @@ var tableManager = new TableManager(
     matchCancelHandler,
     getNextMatch
 );
+
+function initTableManager() {
+    console.log('matchQueueResource.initTableManager');
+    tableManager.init();
+}
 
 function getQueuedMatchById(matchKey) {
     console.log('PROMISE matchQueueResource.getQueuedMatchById');
@@ -66,18 +72,13 @@ function delayMatch(matchKey) {
 
 function getTableState() {
     console.log('matchQueueResource.getTableState');
-    return {
-        state: tableManager.state,
-        timer: tableManager.timer,
-        currentMatch: tableManager.currentMatch,
-        errorMsg: tableManager.errorMsg
-    };
+    return tableManager.getTableState();
 }
 
-function startNext () {
+function startNext() {
     // skip match prep and start the match timer
     console.log('matchQueueResource.startNext');
-    tableManager.start();
+    return tableManager.start();
 }
 
 function finishCurrent() {
@@ -103,23 +104,23 @@ function cancelCurrent() {
     tableManager.cancel();
 }
 
-function matchPrepHandler () {
+function matchPrepHandler() {
     console.log('MatchQueueResource.matchPrepHandler');
     /* Announce match here? */
     return Promise.resolve();
 }
 
-function matchStartHandler (matchKey) {
+function matchStartHandler(matchKey) {
     console.log('MatchQueueResource.matchStartHandler');
     return matchQueueDAO.startMatch(matchKey);
 }
 
-function matchFinishHandler (matchKey) {
+function matchFinishHandler(matchKey) {
     console.log('MatchQueueResource.matchFinishHandler');
     return matchQueueDAO.finishMatch(matchKey);
 }
 
-function matchCancelHandler (matchKey) {
+function matchCancelHandler(matchKey) {
     console.log('MatchQueueResource.matchCancelHandler');
     return matchQueueDAO.cancelMatch(matchKey);
 }

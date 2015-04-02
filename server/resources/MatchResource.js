@@ -5,6 +5,12 @@ var matchDAO = require('../daos/MatchDAO');
 var matchPlayerDAO = require('../daos/MatchPlayerDAO');
 var playerResource = require('../resources/PlayerResource');
 
+var EXPECTED_PLAYER_COUNTS_BY_MATCH_TYPE = {
+    SINGLES: 2,
+    DOUBLES: 4,
+    ROUNDROBIN: 3
+};
+
 module.exports = {
     name: 'matchResource',
     getMatchById: _getMatchById,
@@ -34,6 +40,13 @@ function _getAllMatchDataByMatchId(matchKey) {
 }
 
 function _addMatch(matchType, playerIdsWithTeams) {
+    if (playerIdsWithTeams.length != EXPECTED_PLAYER_COUNTS_BY_MATCH_TYPE[matchType]) {
+        var errMsg = 'Invalid match player count.  Expected '
+            + EXPECTED_PLAYER_COUNTS_BY_MATCH_TYPE[matchType]
+            + ' for match type ' + matchType + ', found ' + playerIdsWithTeams.length;
+        console.log('FAIL    MatchResource.addMatch ' + errMsg);
+        return Promise.reject(new Error(errMsg));
+    }
     console.log('PROMISE matchResource._addMatch ' + matchType + " " + JSON.stringify(playerIdsWithTeams));
     var addMatchData = {};
     return matchDAO.createMatch(matchType)

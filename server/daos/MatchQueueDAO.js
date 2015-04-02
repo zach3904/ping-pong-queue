@@ -9,7 +9,9 @@ module.exports = {
 
     getQueuedMatchById: function (matchQueueKey) {
         if (matchQueueKey == null || isNaN(matchQueueKey)) {
-            return Promise.reject("Invalid or missing matchKey " + matchQueueKey);
+            var errMsg = "Invalid or missing matchKey " + matchQueueKey;
+            console.log('FAIL    matchQueueDAO.getQueuedMatchById ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         console.log("PROMISE matchQueueDAO.getQueuedMatchById " + matchQueueKey);
         return new Promise(function (resolve, reject) {
@@ -26,7 +28,7 @@ module.exports = {
                     if (result.rows.length > 0) {
                         queuedMatch = result.rows[0];
                     }
-                    
+
                     console.log("RESOLVE  matchQueueDAO.getQueuedMatchById " + JSON.stringify(queuedMatch));
                     resolve(queuedMatch);
 
@@ -44,7 +46,9 @@ module.exports = {
 
     queueMatch: function (matchKey) {
         if (matchKey == null || isNaN(matchKey)) {
-            return Promise.reject("Invalid or missing matchKey " + matchKey);
+            var errMsg = 'Invalid or missing matchKey ' + matchKey;
+            console.log('FAIL    matchQueueDAO.queueMatch ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         console.log("PROMISE matchQueueDAO.queueMatch " + matchKey);
         return new Promise(function (resolve, reject) {
@@ -73,9 +77,9 @@ module.exports = {
                     }
                     var queuedMatch = null;
                     if (result.rows.length > 0) {
-                        queuedMatch = parseInt(result.rows[0]);
+                        queuedMatch = result.rows[0];
                     }
-                    console.log("RESOLVE matchQueueDAO.getNextMatch " + queuedMatch);
+                    console.log("RESOLVE matchQueueDAO.getNextMatch " + JSON.stringify(queuedMatch));
                     resolve(queuedMatch);
                 });
         });
@@ -84,7 +88,11 @@ module.exports = {
     getMatches: function () {
         console.log("PROMISE matchQueueDAO.getMatches");
         return new Promise(function (resolve, reject) {
-            db.query('SELECT * FROM ping_pong.match_queue WHERE started_dtm IS NULL AND canceled_dtm IS NULL ORDER BY queued_dtm ASC LIMIT 50;',
+            db.query('SELECT * FROM ping_pong.match_queue ' +
+                'WHERE started_dtm IS NULL ' +
+                'AND canceled_dtm IS NULL ' +
+                'ORDER BY queued_dtm ASC, match_queue_key ASC ' +
+                'LIMIT 50;',
                 [], function (err, result) {
                     if (err) {
                         console.log("REJECT  matchQueueDAO.getMatches " + err);
@@ -104,27 +112,37 @@ module.exports = {
     },
 
     cancelMatch: function (matchKey) {
-            if (matchKey == null || isNaN(matchKey)) {
-                return Promise.reject("Invalid or missing matchKey " + matchKey);
-            }
-            console.log("PROMISE matchQueueDAO.cancelMatch " + matchKey);
-            return new Promise(function (resolve, reject) {
-                db.query('UPDATE ping_pong.match_queue SET canceled_dtm = now() WHERE match_key = $1::bigint;',
-                    [matchKey], function (err, result) {
-                        if (err) {
-                            console.log("REJECT  matchQueueDAO.cancelMatch " + err);
-                            reject(err);
-                            return;
-                        }
-                        console.log("RESOLVE  matchQueueDAO.cancelMatch");
-                        resolve();
-                    });
-            });
+        if (matchKey == null || isNaN(matchKey)) {
+            var errMsg = "Invalid or missing matchKey " + matchKey;
+            console.log('FAIL    matchQueueDAO.cancelMatch ' + errMsg);
+            return Promise.reject(new Error(errMsg));
+        }
+        console.log("PROMISE matchQueueDAO.cancelMatch " + matchKey);
+        return new Promise(function (resolve, reject) {
+            db.query('UPDATE ping_pong.match_queue SET canceled_dtm = now() WHERE match_key = $1::bigint;',
+                [matchKey], function (err, result) {
+                    if (err) {
+                        console.log("REJECT  matchQueueDAO.cancelMatch " + err);
+                        reject(err);
+                        return;
+                    }
+                    if (result.rowCount != 1) {
+                        var errMsg = "Expected 1 row updated; Got " + result.rowCount + " rows updated";
+                        console.log("REJECT  matchQueueDAO.cancelMatch " + errMsg);
+                        reject(new Error(errMsg));
+                        return;
+                    }
+                    console.log("RESOLVE  matchQueueDAO.cancelMatch");
+                    resolve();
+                });
+        });
     },
 
     delayMatch: function (matchKey) {
         if (matchKey == null || isNaN(matchKey)) {
-            return Promise.reject("Invalid or missing matchKey " + matchKey);
+            var errMsg = "Invalid or missing matchKey " + matchKey;
+            console.log('FAIL    matchQueueDAO.delayMatch ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         console.log("PROMISE matchQueueDAO.delayMatch " + matchKey);
         return new Promise(function (resolve, reject) {
@@ -135,6 +153,12 @@ module.exports = {
                         reject(err);
                         return;
                     }
+                    if (result.rowCount != 1) {
+                        var errMsg = "Expected 1 row updated; Got " + result.rowCount + " rows updated";
+                        console.log("REJECT  matchQueueDAO.delayMatch " + errMsg);
+                        reject(new Error(errMsg));
+                        return;
+                    }
                     console.log("RESOLVE  matchQueueDAO.delayMatch");
                     resolve();
                 });
@@ -143,7 +167,9 @@ module.exports = {
 
     startMatch: function (matchKey) {
         if (matchKey == null || isNaN(matchKey)) {
-            return Promise.reject("Invalid or missing matchKey " + matchKey);
+            var errMsg = "Invalid or missing matchKey " + matchKey;
+            console.log('FAIL    matchQueueDAO.startMatch ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         console.log("PROMISE matchQueueDAO.startMatch " + matchKey);
         return new Promise(function (resolve, reject) {
@@ -154,6 +180,12 @@ module.exports = {
                         reject(err);
                         return;
                     }
+                    if (result.rowCount != 1) {
+                        var errMsg = "Expected 1 row updated; Got " + result.rowCount + " rows updated";
+                        console.log("REJECT  matchQueueDAO.startMatch " + errMsg);
+                        reject(new Error(errMsg));
+                        return;
+                    }
                     console.log("RESOLVE  matchQueueDAO.startMatch");
                     resolve();
                 });
@@ -162,7 +194,9 @@ module.exports = {
 
     finishMatch: function (matchKey) {
         if (matchKey == null || isNaN(matchKey)) {
-            return Promise.reject("Invalid or missing matchKey " + matchKey);
+            var errMsg = "Invalid or missing matchKey " + matchKey;
+            console.log('FAIL    matchQueueDAO.finishMatch ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         console.log("PROMISE matchQueueDAO.finishMatch " + matchKey);
         return new Promise(function (resolve, reject) {
@@ -171,6 +205,12 @@ module.exports = {
                     if (err) {
                         console.log("REJECT  matchQueueDAO.finishMatch " + err);
                         reject(err);
+                        return;
+                    }
+                    if (result.rowCount != 1) {
+                        var errMsg = "Expected 1 row updated; Got " + result.rowCount + " rows updated";
+                        console.log("REJECT  matchQueueDAO.finishMatch " + errMsg);
+                        reject(new Error(errMsg));
                         return;
                     }
                     console.log("RESOLVE  matchQueueDAO.finishMatch");

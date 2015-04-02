@@ -3,6 +3,8 @@
 var assert = require("assert");
 var Promise = require("promise");
 var testSetup = require('../TestSetup');
+var testValidators = require('../TestValidators');
+var testCases = require('../TestCases');
 var matchQueueDAO = require('../../server/daos/MatchQueueDAO');
 
 var testData;
@@ -33,81 +35,43 @@ describe('MatchQueueDAO', function () {
                 }, done);
         });
 
-        it('should return a match if a queued match if the given ID exists', function (done) {
+        it('should return a match if a queued match with the given ID exists', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.getQueuedMatchById(testData.queuedMatches[0].match_queue_key)
-                .then(function (match) {
-                    try {
-                        assert(match != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                }, function (err) {
-                    done(new Error(err));
-                });
+            testCases.expectResult(
+                matchQueueDAO.getQueuedMatchById,
+                [testData.queuedMatches[0].match_queue_key],
+                testData.queuedMatches[0],
+                done);
         });
 
         it('should return null if no queued match with the given ID exists', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.getQueuedMatchById(2000000000)
-                .then(function (match) {
-                    try {
-                        assert(match == null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                }, function (err) {
-                    done(new Error(err));
-                });
+            testCases.expectNoResult(matchQueueDAO.getQueuedMatchById, [2000000000], done);
         });
 
-        it('should return an error if the given ID is null', function (done) {
+        it('should throw an error if the given ID is null', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.getQueuedMatchById()
-                .then(function (match) {
-                    done(new Error("Failed to fail " + match));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.getQueuedMatchById, [], done);
         });
 
-        it('should return an error if the given ID is invalid', function (done) {
+        it('should throw an error if the given ID is invalid', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.getQueuedMatchById('ABC')
-                .then(function (match) {
-                    done(new Error("Failed to fail " + match));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.getQueuedMatchById, ['ABC'], done);
         });
     });
 
     describe('queueMatch', function () {
 
-        it('should create a new match_queue record with the given matchKey and return the matchQueueKey', function (done) {
+        it('should create a new match_queue record with the given matchKey and return the queued match', function (done) {
             console.log('********************************************************************************');
             matchQueueDAO.queueMatch(testData.matches[0].match_key)
                 .then(function (queuedMatch) {
                     try {
-                        assert(queuedMatch != null);
-                        assert(queuedMatch.match_queue_key > 0);
-                        assert(queuedMatch.queued_dtm != null);
+                        testValidators.expectNonNull(queuedMatch);
+                        testValidators.expectValidKey(queuedMatch.match_queue_key, 'match_queue_key');
+                        testValidators.expectDate(queuedMatch.queued_dtm, 'queued_dtm');
+                        testValidators.expectResult(queuedMatch.match_key, testData.matches[0].match_key);
+                        // OR testValidators.expectSubsetMatch(queuedMatch, {'match_key': testData.matches[0].match_key});
                     } catch (e) {
                         done(e);
                         return;
@@ -118,36 +82,19 @@ describe('MatchQueueDAO', function () {
                 });
         });
 
-        it('should return an error if the given matchKey is null', function (done) {
+        it('should throw an error if the given ID is null', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.queueMatch()
-                .then(function (matchQueueKey) {
-                    done(new Error("Failed to fail " + matchQueueKey));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.queueMatch, [], done);
         });
 
-        it('should return an error if the given matchKey is invalid', function (done) {
+        it('should throw an error if the given ID is invalid', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.queueMatch('BEER PONG')
-                .then(function (matchKey) {
-                    done(new Error("Failed to fail " + matchKey));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.queueMatch, ['ABC'], done);
+        });
+
+        it('should throw an error if no match with the given ID exists', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchQueueDAO.queueMatch, [2000000000], done);
         });
     });
 
@@ -163,42 +110,32 @@ describe('MatchQueueDAO', function () {
 
         it('should return a match if a pending (not started or canceled) queued match exists', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.getNextMatch()
-                .then(function (match) {
-                    try {
-                        assert(match != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                }, function (err) {
-                    done(new Error(err));
-                });
+            //done(new Error('!!! TEST SETUP !!!'));
+            // What should this return?
+            //   A match_queue record? seems like this would be enough...
+            //   A match?
+            //   A combined object with both properties?
+            //   A joined object, match queue record with added match property?
+            //   A joined object, match with added match_queue property?
+            //   Both objects, wrapped in a {match: ..., queuedMatch: ...}
+            // Think about use cases...
+            // This func is only called from TableManager._idle
+            // The only thing required is a match_id (to set currentMatch)
+            // So I should keep it simple for now and just return the queue record
+            testCases.expectResult(matchQueueDAO.getNextMatch, [], testData.queuedMatches[0], done);
         });
 
         it('should return null if no pending queued match exists', function (done) {
             Promise.all([
                 matchQueueDAO.cancelMatch(testData.matches[0].match_key),
-                matchQueueDAO.cancelMatch(testData.matches[1].match_key),
-                matchQueueDAO.startMatch(testData.matches[2].match_key)
+                matchQueueDAO.startMatch(testData.matches[1].match_key)
                     .then(function (result) {
-                        return matchQueueDAO.finishMatch(testData.matches[2].match_key);
-                    })
+                        return matchQueueDAO.finishMatch(testData.matches[1].match_key);
+                    }),
+                matchQueueDAO.startMatch(testData.matches[2].match_key)
             ]).then(function () {
                 console.log('********************************************************************************');
-                matchQueueDAO.getNextMatch()
-                    .then(function (queuedMatch) {
-                        try {
-                            assert(queuedMatch == null);
-                        } catch (e) {
-                            done(e);
-                            return;
-                        }
-                        done();
-                    }, function (err) {
-                        done(new Error(err));
-                    });
+                testCases.expectNoResult(matchQueueDAO.getNextMatch, [], done);
             });
         });
     });
@@ -215,44 +152,22 @@ describe('MatchQueueDAO', function () {
 
         it('should return all queued matches in a pending state (not started or canceled)', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.getMatches()
-                .then(function (queuedMatches) {
-                    try {
-                        assert(queuedMatches != null);
-                        assert(queuedMatches.length == testData.queuedMatches.length);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                }, function (err) {
-                    done(new Error(err));
-                });
+            testCases.expectResult(matchQueueDAO.getMatches, [], testData.queuedMatches, done);
         });
 
         it('should return null if no pending queued match exists', function (done) {
             Promise.all([
+                // TODO: This should be moved to TestSetup
+                // Even if it's just a proxy for the dao methods
                 matchQueueDAO.cancelMatch(testData.matches[0].match_key),
                 matchQueueDAO.startMatch(testData.matches[1].match_key)
                     .then(function (result) {
                         return matchQueueDAO.finishMatch(testData.matches[1].match_key);
                     }),
                 matchQueueDAO.startMatch(testData.matches[2].match_key)
-
             ]).then(function () {
                 console.log('********************************************************************************');
-                matchQueueDAO.getMatches()
-                    .then(function (queuedMatch) {
-                        try {
-                            assert(queuedMatch == null);
-                        } catch (e) {
-                            done(e);
-                            return;
-                        }
-                        done();
-                    }, function (err) {
-                        done(new Error(err));
-                    });
+                testCases.expectNoResult(matchQueueDAO.getNextMatch, [], done);
             });
         });
     });
@@ -291,54 +206,21 @@ describe('MatchQueueDAO', function () {
                 });
         });
 
-        it('should return an error if the given match does not exist', function (done) {
+        it('should throw an error if the given ID is null', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.cancelMatch()
-                .then(function () {
-                    done(new Error("Failed to fail"));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.cancelMatch, [], done);
         });
 
-        it('should return an error if the queue record for the given match does not exist (match not queued)', function (done) {
+        it('should throw an error if the given ID is invalid', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.cancelMatch()
-                .then(function () {
-                    done(new Error("Failed to fail"));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.cancelMatch, ['ABC'], done);
         });
 
-        // this should be enforced at the resource level
-        //it('should return an error if the queued record for the given match already has a canceled_dtm', function (done) {
-        //    console.log('********************************************************************************');
-        //    matchQueueDAO.cancelMatch()
-        //        .then(function () {
-        //            done(new Error("Failed to fail"));
-        //        }, function (err) {
-        //            try {
-        //                assert(err != null);
-        //            } catch (e) {
-        //                done(e);
-        //                return;
-        //            }
-        //            done();
-        //        });
-        //});
+        it('should throw an error if no queue record with the given match ID exists (match not exists OR match not queued)', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchQueueDAO.cancelMatch, [2000000000], done);
+        });
+
     });
 
     describe('delayMatch', function () {
@@ -367,7 +249,7 @@ describe('MatchQueueDAO', function () {
                         // TODO
                         // assert queuedMatch.queued_dtm is greater than the test data value
                         // need to include queued_dtm in testData
-                        // timeout 1s, then test
+                        // timeout 1s, then test?
                     } catch (e) {
                         done(e);
                         return;
@@ -380,36 +262,19 @@ describe('MatchQueueDAO', function () {
                 });
         });
 
-        it('should return an error if the given match does not exist', function (done) {
+        it('should throw an error if the given ID is null', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.delayMatch()
-                .then(function () {
-                    done(new Error("Failed to fail"));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.delayMatch, [], done);
         });
 
-        it('should return an error if the queue record for the given match does not exist (match not queued)', function (done) {
+        it('should throw an error if the given ID is invalid', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.delayMatch()
-                .then(function () {
-                    done(new Error("Failed to fail"));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.delayMatch, ['ABC'], done);
+        });
+
+        it('should throw an error if no queue record with the given match ID exists (match not exists OR match not queued)', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchQueueDAO.delayMatch, [2000000000], done);
         });
     });
 
@@ -448,36 +313,19 @@ describe('MatchQueueDAO', function () {
                 });
         });
 
-        it('should return an error if the given match does not exist', function (done) {
+        it('should throw an error if the given ID is null', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.startMatch()
-                .then(function () {
-                    done(new Error("Failed to fail"));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.startMatch, [], done);
         });
 
-        it('should return an error if the queue record for the given match does not exist (match not queued)', function (done) {
+        it('should throw an error if the given ID is invalid', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.startMatch()
-                .then(function () {
-                    done(new Error("Failed to fail"));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.startMatch, ['ABC'], done);
+        });
+
+        it('should throw an error if no queue record with the given match ID exists (match not exists OR match not queued)', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchQueueDAO.startMatch, [2000000000], done);
         });
     });
 
@@ -516,36 +364,19 @@ describe('MatchQueueDAO', function () {
                 });
         });
 
-        it('should return an error if the given match does not exist', function (done) {
+        it('should throw an error if the given ID is null', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.finishMatch()
-                .then(function () {
-                    done(new Error("Failed to fail"));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.finishMatch, [], done);
         });
 
-        it('should return an error if the queue record for the given match does not exist (match not queued)', function (done) {
+        it('should throw an error if the given ID is invalid', function (done) {
             console.log('********************************************************************************');
-            matchQueueDAO.finishMatch()
-                .then(function () {
-                    done(new Error("Failed to fail"));
-                }, function (err) {
-                    try {
-                        assert(err != null);
-                    } catch (e) {
-                        done(e);
-                        return;
-                    }
-                    done();
-                });
+            testCases.expectError(matchQueueDAO.finishMatch, ['ABC'], done);
+        });
+
+        it('should throw an error if no queue record with the given match ID exists (match not exists OR match not queued)', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchQueueDAO.finishMatch, [2000000000], done);
         });
     });
 

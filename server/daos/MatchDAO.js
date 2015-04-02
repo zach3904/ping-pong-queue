@@ -17,10 +17,10 @@ module.exports = {
         if (matchKey == null) {
             var err = 'Required match_key may not be null';
             console.log('FAIL    matchDAO.getMatchById ' + err);
-            return Promise.reject(err);
+            return Promise.reject(new Error(err));
         }
         if (isNaN(matchKey) || matchKey < 1) {
-            return Promise.reject("Invalid match key " + matchKey);
+            return Promise.reject(new Error("Invalid match key " + matchKey));
         }
         console.log('PROMISE matchDAO.getMatchById ' + matchKey);
         return new Promise(function (resolve, reject) {
@@ -41,13 +41,13 @@ module.exports = {
         if (matchType == null) {
             var errMsgNull = 'Required match_type may not be null';
             console.log('FAIL    matchDAO.createMatch ' + errMsgNull);
-            return Promise.reject(errMsgNull);
+            return Promise.reject(new Error(errMsgNull));
         }
         // This check is unnecessary. Will cause DB error.
         //if (_.intersection(validMatchTypes, matchType).length == -1) {
         //    var errMsgInvalid = 'Invalid match_type ' + matchType;
         //    console.log('FAIL    matchDAO.createMatch ' + errMsgInvalid);
-        //    return Promise.reject(errMsgInvalid);
+        //    return Promise.reject(new Error(errMsgInvalid));
         //}
         console.log('PROMISE matchDAO.createMatch ' + matchType);
         return new Promise(function (resolve, reject) {
@@ -68,10 +68,10 @@ module.exports = {
         if (matchKey == null) {
             var err = 'Required match_key may not be null';
             console.log('FAIL    matchDAO.getMatchById ' + err);
-            return Promise.reject(err);
+            return Promise.reject(new Error(err));
         }
         if (isNaN(matchKey) || matchKey < 1) {
-            return Promise.reject("Invalid match key " + matchKey);
+            return Promise.reject(new Error("Invalid match key " + matchKey));
         }
         console.log('PROMISE matchDAO.getMatchById ' + matchKey);
         return new Promise(function (resolve, reject) {

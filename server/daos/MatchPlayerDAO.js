@@ -11,10 +11,10 @@ module.exports = {
         if (matchPlayerKey == null) {
             var err = 'Required match_player_key may not be null';
             console.log('FAIL    matchPlayerDAO.getMatchPlayerById ' + err);
-            return Promise.reject(err);
+            return Promise.reject(new Error(err));
         }
         if (isNaN(matchPlayerKey) || matchPlayerKey < 1) {
-            return Promise.reject("Invalid match player key " + matchPlayerKey);
+            return Promise.reject(new Error("Invalid match player key " + matchPlayerKey));
         }
         console.log('PROMISE matchPlayerDAO.getMatchPlayerById ' + matchPlayerKey);
         return new Promise(function (resolve, reject) {
@@ -34,11 +34,11 @@ module.exports = {
     getMatchPlayers: function (matchKey) {
         if (matchKey == null) {
             var err = 'Required match_key may not be null';
-            console.log('FAIL    matchDAO.getMatchById ' + err);
-            return Promise.reject(err);
+            console.log('FAIL    matchPlayerDAO.getMatchById ' + err);
+            return Promise.reject(new Error(err));
         }
         if (isNaN(matchKey) || matchKey < 1) {
-            return Promise.reject("Invalid match key " + matchKey);
+            return Promise.reject(new Error("Invalid match key " + matchKey));
         }
         console.log('PROMISE matchPlayerDAO.getMatchPlayers ' + matchKey);
         return new Promise(function (resolve, reject) {
@@ -61,29 +61,29 @@ module.exports = {
     createMatchPlayer: function (matchKey, playerKey, team) {
         if (matchKey == null) {
             var matchKeyNullErr = 'Required match_key may not be null';
-            console.log('FAIL    matchDAO.createMatchPlayer ' + matchKeyNullErr);
-            return Promise.reject(matchKeyNullErr);
+            console.log('FAIL    matchPlayerDAO.createMatchPlayer ' + matchKeyNullErr);
+            return Promise.reject(new Error(matchKeyNullErr));
         }
         if (isNaN(matchKey) || matchKey < 1) {
-            return Promise.reject("Invalid match key " + matchKey);
+            return Promise.reject(new Error("Invalid match key " + matchKey));
         }
         if (playerKey == null) {
             var playerKeyNullErr = 'Required player_key may not be null';
-            console.log('FAIL    matchDAO.createMatchPlayer ' + playerKeyNullErr);
-            return Promise.reject(playerKeyNullErr);
+            console.log('FAIL    matchPlayerDAO.createMatchPlayer ' + playerKeyNullErr);
+            return Promise.reject(new Error(playerKeyNullErr));
         }
         if (isNaN(playerKey) || playerKey < 1) {
-            return Promise.reject("Invalid player key " + playerKey);
+            return Promise.reject(new Error("Invalid player key " + playerKey));
         }
-        console.log('PROMISE matchDAO.createMatchPlayer ' + matchKey + " " + playerKey + " " + team);
+        console.log('PROMISE matchPlayerDAO.createMatchPlayer ' + matchKey + " " + playerKey + " " + team);
         return new Promise(function (resolve, reject) {
             db.query('INSERT into ping_pong.match_player (match_key, player_key, team) VALUES ($1::bigint, $2::bigint, $3::team) RETURNING *;',
                 [matchKey, playerKey, team], function (err, result) {
                     if (err) {
-                        console.log("REJECT  matchDAO.createMatchPlayer " + err);
+                        console.log("REJECT  matchPlayerDAO.createMatchPlayer " + err);
                         reject(err);
                     } else {
-                        console.log("RESOLVE matchDAO.createMatchPlayer " + JSON.stringify(result.rows[0]));
+                        console.log("RESOLVE matchPlayerDAO.createMatchPlayer " + JSON.stringify(result.rows[0]));
                         resolve(result.rows[0]);
                     }
                 });

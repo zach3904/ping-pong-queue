@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('underscore');
-var assert = require("assert");
+var testValidators = require('./TestValidators');
 
 module.exports = {
 
@@ -15,7 +15,7 @@ module.exports = {
         return func.apply(null, args)
             .then(function (result) {
                 try {
-                    assert(result != null, 'Expected non-null result, found null');
+                    testValidators.expectNonNull(result);
                 } catch (e) {
                     if (done) done(e);
                     else throw e;
@@ -31,23 +31,105 @@ module.exports = {
     expectResult: function (func, args, expectedResult, done) {
         return func.apply(null, args)
             .then(function (result) {
-                // Represent all values as strings
-                // Because that's how they come back from the db
-                // Need to test assert.deepEqual/strictEqual/etc and replace this
-                var replacer = function (key, value) {
-                    if (typeof value === 'number') return value.toString();
-                    if (typeof value === 'boolean') return value.toString();
-                    return value;
-                };
-                var resultJson = JSON.stringify(result, replacer);
-                var expectedJson = JSON.stringify(expectedResult, replacer);
                 try {
-                    //assert(resultJson === expectedJson, 'Result not equal to expected (compare as json using ===)');
-                    //assert.strictEqual(resultJson, expectedJson, 'Result not equal to expected (compare as json with strictEqual)');
-                    assert.deepEqual(result, expectedResult, 'Result not equal to expected (compare with deepEqual)');
+                    testValidators.expectResult(result, expectedResult);
                 } catch (e) {
-                    console.log('EXPECTED: ' + expectedJson);
-                    console.log('ACTUAL:   ' + resultJson);
+                    if (done) done(e);
+                    else throw e;
+                    return;
+                }
+                if (done) done();
+                return result;
+            }, function (err) {
+                if (done) done(new Error(err));
+                else throw new Error(err);
+            });
+    },
+
+    expectResultById: function (func, args, resultFetcher, id, expectedResult, done) {
+        return func.apply(null, args)
+            .then(function (ignored) {
+                return resultFetcher(id);
+            }, function (err) {
+                if (done) done(new Error(err));
+                else throw new Error(err);
+            })
+            .then(function (result) {
+                try {
+                    testValidators.expectResult(result, expectedResult);
+                } catch (e) {
+                    if (done) done(e);
+                    else throw e;
+                    return;
+                }
+                if (done) done();
+                return result;
+            }, function (err) {
+                if (done) done(new Error(err));
+                else throw new Error(err);
+            });
+    },
+
+    expectResultByReturnedId: function (func, args, resultFetcher, expectedResult, done) {
+        return func.apply(null, args)
+            .then(function (id) {
+                return resultFetcher(id);
+            }, function (err) {
+                if (done) done(new Error(err));
+                else throw new Error(err);
+            })
+            .then(function (result) {
+                try {
+                    testValidators.expectResult(resultFetcher, result, expectedResult);
+                } catch (e) {
+                    if (done) done(e);
+                    else throw e;
+                    return;
+                }
+                if (done) done();
+                return result;
+            }, function (err) {
+                if (done) done(new Error(err));
+                else throw new Error(err);
+            });
+    },
+
+    expectSubsetMatchById: function (func, args, resultFetcher, id, expectedResultSubset, done) {
+        return func.apply(null, args)
+            .then(function (ignored) {
+                return resultFetcher(id);
+            }, function (err) {
+                if (done) done(new Error(err));
+                else throw new Error(err);
+            })
+            .then(function (result) {
+                try {
+                    testValidators.expectSubsetMatch(result, expectedResultSubset);
+                } catch (e) {
+                    if (done) done(e);
+                    else throw e;
+                    return;
+                }
+                if (done) done();
+                return result;
+            }, function (err) {
+                if (done) done(new Error(err));
+                else throw new Error(err);
+            });
+    },
+
+    expectSubsetMatchByReturnedId: function (func, args, resultFetcher, expectedResultSubset, done) {
+        return func.apply(null, args)
+            .then(function (id) {
+                return resultFetcher(id);
+            }, function (err) {
+                if (done) done(new Error(err));
+                else throw new Error(err);
+            })
+            .then(function (result) {
+                try {
+                    testValidators.expectSubsetMatch(result, expectedResultSubset);
+                } catch (e) {
                     if (done) done(e);
                     else throw e;
                     return;
@@ -64,21 +146,9 @@ module.exports = {
         return func.apply(null, args)
             .then(function (result) {
                 try {
-
-                    var key = result[keyKey];
-                    delete result[keyKey];
-                    //console.log('VALIDATE ' + keyKey + ' IS VALID : ' + key);
-                    assert(key != null, 'Expected non-null key, found null');
-                    assert(key === parseInt(key) || key === parseInt(key).toString(), 'Expected key to be an integer (or string representation), found ' + key);
-                    assert(parseInt(key).toString() === key, 'Expected key to be a string representation of an integer, found ' + key);
-                    //assert(key === parseInt(key), 'Expected key to be an integer, found ' + key);
-                    assert(key > 0, 'Expected key greater than zero, found ' + key);
-
-                    assert.deepEqual(result, expectedResult, 'Result not equal to expected (compare with deepEqual)');
-
+                    testValidators.expectValidKey(result[keyKey], keyKey);
+                    testValidators.expectSubsetMatch(result, expectedResult)
                 } catch (e) {
-                    console.log('EXPECTED: ' + JSON.stringify(expectedResult) + ' WITH VALID KEY');
-                    console.log('ACTUAL:   ' + JSON.stringify(result));
                     if (done) done(e);
                     else throw e;
                     return;
@@ -95,11 +165,7 @@ module.exports = {
         return func.apply(null, args)
             .then(function (key) {
                 try {
-                    assert(key != null, 'Expected non-null key, found null');
-                    assert(key === parseInt(key) || key === parseInt(key).toString(), 'Expected key to be an integer (or string representation), found ' + key);
-                    //assert(parseInt(key).toString() === key, 'Expected key to be a string representation of an integer, found ' + key);
-                    assert(key === parseInt(key), 'Expected key to be an integer, found ' + key);
-                    assert(key > 0, 'Expected key greater than zero, found ' + key);
+                    testValidators.expectValidKey(key);
                 } catch (e) {
                     if (done) done(e);
                     else throw e;
@@ -115,9 +181,9 @@ module.exports = {
 
     expectNoResult: function (func, args, done) {
         return func.apply(null, args)
-            .then(function (result) {
+            .then(function (noresult) {
                 try {
-                    assert(result == null, 'Expected null result, found non-null: ' + JSON.stringify(result));
+                    testValidators.expectNull(noresult);
                 } catch (e) {
                     if (done) done(e);
                     else throw e;
@@ -134,9 +200,7 @@ module.exports = {
         return func.apply(null, args)
             .then(function (result) {
                 try {
-                    assert(result != null, 'Expected empty array, found null');
-                    assert(_.isArray(result), 'Expected empty array, found: ' + JSON.stringify(result));
-                    assert(_.isEmpty(result), 'Expected empty array, found: ' + JSON.stringify(result));
+                    testValidators.expectEmptyArray(result);
                 } catch (e) {
                     if (done) done(e);
                     else throw e;
@@ -158,7 +222,8 @@ module.exports = {
             }, function (err) {
                 console.log('RECEIVED ERROR AS EXPECTED: ' + err);
                 try {
-                    assert(err != null, 'Expected non-null error message, found null');
+                    //testValidators.expectNonEmptyString(err);
+                    testValidators.expectError(err);
                 } catch (e) {
                     if (done) done(e);
                     else throw e;

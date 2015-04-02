@@ -6,6 +6,11 @@ module.exports = {
 
     name: 'matchQueueService',
 
+    _initTableManager: function () {
+        console.log('matchQueueService._initTableManager');
+        matchQueueResource.initTableManager();
+    },
+
     getQueuedMatchById: function (request, response) {
         console.log('matchQueueService.getQueuedMatchById');
         matchQueueResource.getQueuedMatchById(request.query.match_queue_id)

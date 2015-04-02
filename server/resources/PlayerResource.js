@@ -21,8 +21,8 @@ function _getPlayerById(playerId) {
 function _getPlayerByAny(player) {
     if (player == null) {
         var errMsg = 'Player request may not be null';
-        console.log(errMsg);
-        return Promise.reject(new Error('Error in PlayerResource.getPlayerByAny: ' + errMsg));
+        console.log('FAIL    PlayerResource.getPlayerByAny ' + errMsg);
+        return Promise.reject(new Error(errMsg));
     }
 
     var criteria = [];
@@ -48,7 +48,8 @@ function _getPlayerByAny(player) {
             }
         });
     } catch (e) {
-        return Promise.reject(new Error('Error in PlayerResource.getPlayerByAny: ' + e.message));
+        console.log('FAIL    PlayerResource.getPlayerByAny: ' + e.message);
+        return Promise.reject(e);
     }
 
     console.log('PROMISE playerResource._getPlayerByAny ' + JSON.stringify(player));

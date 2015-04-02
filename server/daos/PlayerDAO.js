@@ -11,8 +11,8 @@ module.exports = {
         // Validate input
         if (isNaN(playerKey) || playerKey < 1) {
             var errMsg = 'Invalid PlayerKey ' + playerKey;
-            console.log(errMsg);
-            return Promise.reject(new Error('Error in playerDAO.getPlayerById: ' + errMsg));
+            console.log('FAIL    playerDAO.getPlayerById ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         console.log("PROMISE playerDAO.getPlayerById " + playerKey);
         return new Promise(function (resolve, reject) {
@@ -47,15 +47,21 @@ module.exports = {
 
     getPlayerByAny: function (criteria, params) {
         // Validate input
+        var errMsg = null;
         if (criteria == null || criteria == undefined || criteria.length < 1) {
-            return Promise.reject('Error in PlayerDAO.getPlayerByAny: missing criteria')
+            errMsg = 'Missing required parameter: criteria';
+            console.log('FAIL    playerDAO.getPlayerByAny ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         else if (params == null || params == undefined || params.length < 1) {
-            return Promise.reject('Error in PlayerDAO.getPlayerByAny: missing params');
+            errMsg = 'Missing required parameter: params';
+            console.log('FAIL    playerDAO.getPlayerByAny ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         else if (criteria.length != params.length) {
-            return Promise.reject('Error in PlayerDAO.getPlayerByAny: criteria length ('
-            + criteria.length + ') must match params length (' + params.length + ')');
+            errMsg = 'criteria length (' + criteria.length + ') must match params length (' + params.length + ')';
+            console.log('FAIL    playerDAO.getPlayerByAny ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
 
         var query = 'SELECT * FROM ping_pong.players';
@@ -83,9 +89,9 @@ module.exports = {
                 var player = null;
                 if (result.rows.length > 0) {
                     if (result.rows.length > 1) {
-                        var err = "Expected 0 or 1 player results; received " + result.rows.length;
-                        console.log("REJECT  playerDAO.getPlayerById " + err);
-                        reject(err);
+                        var errMsg = "Expected 0 or 1 player results; received " + result.rows.length;
+                        console.log("REJECT  playerDAO.getPlayerById " + errMsg);
+                        reject(errMsg);
                         return;
                     }
                     player = result.rows[0];
@@ -98,7 +104,9 @@ module.exports = {
 
     searchPlayers: function (query) {
         if (query == null || typeof query != 'string' || query.length < 1) {
-            return Promise.reject('Query is invalid or undefined');
+            var errMsg = 'Query is invalid or undefined';
+            console.log('FAIL    PlayerDAO.searchPlayers ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         console.log("PROMISE playerDAO.searchPlayers " + query);
         return new Promise(function (resolve, reject) {
@@ -115,7 +123,7 @@ module.exports = {
 
             //console.log(queryStr);
 
-            db.query(queryStr, ['%'+query+'%'], function (err, result) {
+            db.query(queryStr, ['%' + query + '%'], function (err, result) {
                 if (err) {
                     console.log("REJECT  playerDAO.searchPlayers " + err);
                     reject(err);
@@ -129,7 +137,9 @@ module.exports = {
 
     addPlayer: function (player) {
         if (player.name == null || typeof player.name != 'string' || player.name.length < 1) {
-            return Promise.reject("Missing required player name " + player);
+            var errMsg = 'Missing required player name ' + player;
+            console.log('FAIL    playerDAO.addPlayer ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         console.log("PROMISE playerDAO.addPlayer " + JSON.stringify(player));
         return new Promise(function (resolve, reject) {
@@ -148,16 +158,21 @@ module.exports = {
     },
 
     updatePlayer: function (player) {
+        var errMsg = null;
         if (player.player_key == null) {
-            var err = 'Required player_key may not be null';
-            console.log('FAIL    playerDAO.updatePlayer ' + err);
-            return Promise.reject(err);
+            errMsg = 'Required player_key may not be null';
+            console.log('FAIL    playerDAO.updatePlayer ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         if (isNaN(player.player_key) || player.player_key < 1) {
-            return Promise.reject("Invalid player key " + player.player_key);
+            errMsg = 'Invalid player key ' + player.player_key;
+            console.log('FAIL    playerDAO.updatePlayer ' + errMsg);
+            return Promise.reject(new Error(errMsg));
         }
         if (player.name == null || typeof player.name != 'string' || player.name.length < 1) {
-            return Promise.reject("Missing or invalid required player name " + JSON.stringify(player));
+            errMsg = 'Missing or invalid required player name ' + JSON.stringify(player);
+            console.log('FAIL    playerDAO.updatePlayer');
+            return Promise.reject(new Error(errMsg));
         }
         console.log("PROMISE playerDAO.updatePlayer " + JSON.stringify(player));
         return new Promise(function (resolve, reject) {

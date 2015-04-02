@@ -1,7 +1,9 @@
 /* global describe, it, before, after, beforeEach, afterEach */
 
+var _ = require("underscore");
 var assert = require("assert");
 var testSetup = require('../TestSetup');
+var testValidators = require('../TestValidators');
 var testCases = require('../TestCases');
 var matchResource = require('../../server/resources/MatchResource');
 
@@ -58,33 +60,53 @@ describe('MatchResource', function () {
 
     describe('addMatch', function () {
 
-        //it('should create and return a new match with the given matchType and playersWithTeams', function (done) {
-        //    console.log('********************************************************************************');
-        //    testCases.expectResultWithValidKey(matchResource.addMatch,
-        //        ['SINGLES', testData.players],
-        //        {
-        //            match_type: 'SINGLES',
-        //            match_players: testData.players
-        //        },
-        //        'match_key', done);
-        //});
-        //
-        //it('should return an error if the given matchType is null', function (done) {
-        //    console.log('********************************************************************************');
-        //    testCases.expectError(matchResource.addMatch, [null, testData.players], done);
-        //});
-        //
-        //it('should return an error if the given matchType is invalid', function (done) {
-        //    console.log('********************************************************************************');
-        //    testCases.expectError(matchResource.addMatch, ['BEER PONG', testData.players], done);
-        //});
-        // TODO create addMatchPlayer function in MatchResource
-        // then call from MatchResource.addMatch
-        // and move this test to describe(addMatchPlayer)
-        //it('should return an error if the given match already has the max allowed players for it\'s match_type', function (done) {
-        //    console.log('********************************************************************************');
-        //    done(new Error('NOT IMPLEMENTED'));
-        //});
+        // age old question: when to return ids vs full entities
+        it('should create and return a new match and matchPlayers with the given matchType and players with teams', function (done) {
+            var playerIds = _.pluck(testData.players, 'player_key');
+            var playerIdsWithTeams = [];
+            playerIdsWithTeams.push({player_key: playerIds[0], team: 'CHALLENGER'});
+            playerIdsWithTeams.push({player_key: playerIds[1], team: 'CHALLENGED'});
+            console.log('********************************************************************************');
+            matchResource.addMatch('SINGLES', playerIdsWithTeams)
+                .then(function (result) {
+                    testValidators.expectSubsetMatch(result, {match_type: 'SINGLES'});
+                    testValidators.expectValidKey(result.match_key, 'match_key');
+                    for (var i = 0; i < result.match_players.length; i++) {
+                        var expectedMatchPlayer = playerIdsWithTeams[i];
+                        testValidators.expectSubsetMatch(result.match_players[i], expectedMatchPlayer);
+                        testValidators.expectValidKey(result.match_players[i].match_player_key, 'match_player_key');
+                    }
+                    done();
+                }, done);
+        });
+
+        it('should return an error if the given matchType is null', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchResource.addMatch, [null, testData.players], done);
+        });
+
+        it('should return an error if the given matchType is invalid', function (done) {
+            console.log('********************************************************************************');
+            testCases.expectError(matchResource.addMatch, ['BEER PONG', testData.players], done);
+        });
+
+        it('should return an error if given fewer than the expected number of players for the given match_type', function (done) {
+            var playerIds = _.pluck(testData.players, 'player_key');
+            var playerIdsWithTeams = [];
+            playerIdsWithTeams.push({player_key: playerIds[0], team: 'CHALLENGER'});
+            console.log('********************************************************************************');
+            testCases.expectError(matchResource.addMatch, ['SINGLES', playerIdsWithTeams], done);
+        });
+
+        it('should return an error if given more than the expected number of players for the given match_type', function (done) {
+            var playerIds = _.pluck(testData.players, 'player_key');
+            var playerIdsWithTeams = [];
+            playerIdsWithTeams.push({player_key: playerIds[0], team: 'CHALLENGER'});
+            playerIdsWithTeams.push({player_key: playerIds[1], team: 'CHALLENGED'});
+            playerIdsWithTeams.push({player_key: playerIds[2], team: 'CHALLENGED'});
+            console.log('********************************************************************************');
+            testCases.expectError(matchResource.addMatch, ['SINGLES', playerIdsWithTeams], done);
+        });
 
     });
 
